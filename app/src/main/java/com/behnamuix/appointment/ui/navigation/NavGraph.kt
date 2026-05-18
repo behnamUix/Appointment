@@ -17,7 +17,7 @@ fun AppNavGraph() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Routes.SPLASH
+        startDestination = Routes.APPOINTMENT_LIST
 
     ) {
         composable(Routes.SPLASH) {

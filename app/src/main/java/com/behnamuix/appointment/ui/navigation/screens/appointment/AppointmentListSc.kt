@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -30,11 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
-
 import com.behnamuix.appointment.data.remote.remoteModel.Item
 import com.behnamuix.appointment.ui.theme.navigation.Routes
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
@@ -53,15 +49,14 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AppointmentListSc(
     navController: NavHostController,
-    appointmentListViewModel: AppointmentListViewModel = koinViewModel(),
+    vm: AppointmentListViewModel = koinViewModel(),
 ) {
-    val openAlertDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    var list = appointmentListViewModel.appointmentList.collectAsState()
+    val list = vm.appointmentList.collectAsState()
 
     LaunchedEffect(Unit) {
-        appointmentListViewModel.appointmentLoad()
-        appointmentListViewModel.checkInternet(ctx = context)
+        vm.checkInternet(ctx = context)
+        vm.appointmentLoad()
     }
 
 
@@ -72,7 +67,6 @@ fun AppointmentListSc(
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
-
         Spacer(modifier = Modifier.height(16.dp))
         ToolbarComp(
             "Appointment list", onBackClick = {
@@ -81,17 +75,14 @@ fun AppointmentListSc(
             onAddClick = {
                 navController.navigate(Routes.APPOINTMENT_ADD)
             })
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (list.value?.success ?: false) {
                 LazyColumn {
                     items(list.value!!.data.data) {
                         AppointmentCard(it) {
-                            appointmentListViewModel.id.intValue = it.id
-                            openAlertDialog.value = true
-
+                            vm.itemId.intValue = it.id
+                            vm.openAlertDialog.value = true
                         }
 
                     }
@@ -117,7 +108,7 @@ fun AppointmentListSc(
                             )
                     }
 
-                    if (!appointmentListViewModel.connectStatus.value) {
+                    if (!vm.connectStatus.value) {
                         Text(
                             "offline!",
                             style = MaterialTheme.typography.labelMedium,
@@ -132,14 +123,12 @@ fun AppointmentListSc(
 
 
         }
-        if (openAlertDialog.value) {
-            DeleteDialog(
+        if (vm.openAlertDialog.value) {
+            DeleteDialogComp(
                 "delete reason",
-                appointmentListViewModel
-
-                ) {
-                openAlertDialog.value = it
-
+                vm
+            ) {
+                vm.openAlertDialog.value = it
 
             }
         }
@@ -148,13 +137,113 @@ fun AppointmentListSc(
 }
 
 @Composable
-fun DeleteDialog(
+fun AppointmentCard(item: Item, deleteItem: () -> Unit) {
+    OutlinedCard(modifier = Modifier.padding(8.dp)) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Card(shape = CircleShape) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(32.dp),
+                        painter = painterResource(R.drawable.icon_person),
+                        contentDescription = ""
+                    )
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        item.title,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        item.personName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+                    )
+                    Text(
+                        item.phoneNumber,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+                IconButton({
+                    deleteItem()
+                }) {
+                    Icon(
+                        tint = Color(0xFFF44336),
+                        modifier = Modifier
+                            .size(32.dp),
+                        painter = painterResource(R.drawable.icon_delete),
+                        contentDescription = ""
+                    )
+                }
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(8.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+            )
+            Text(
+                item.title,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                item.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+            )
+            Column(
+                Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = item.startTime,
+                        textAlign = TextAlign.Center,
+
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary.copy(0.5f)
+                    )
+
+                    Text(
+                        modifier = Modifier.weight(1f),
+
+                        text = item.endTime,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary.copy(0.5f)
+                    )
+
+                }
+            }
+
+        }
+
+    }
+}
+
+@Composable
+fun DeleteDialogComp(
     label: String,
     vm: AppointmentListViewModel,
     dialog: (Boolean) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
-    val id = vm.id.value
+    var text by remember { mutableStateOf("example reason!") }
+    val id = vm.itemId.value
     AlertDialog(
         title = {
             Text(text = "warning")
@@ -174,9 +263,6 @@ fun DeleteDialog(
                 onClick = {
                     vm.appointmentDelete(id, text)
                     dialog(false)
-
-
-
                 }
             ) {
                 Text("Confirm")
@@ -193,9 +279,12 @@ fun DeleteDialog(
         })
 }
 
-
 @Composable
-fun ToolbarComp(title: String, onAddClick: () -> Unit, onBackClick: () -> Unit) {
+fun ToolbarComp(
+    title: String,
+    onAddClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -233,105 +322,7 @@ fun ToolbarComp(title: String, onAddClick: () -> Unit, onBackClick: () -> Unit) 
 
 }
 
-@Composable
-fun AppointmentCard(appointment: Item, deleteItem: () -> Unit) {
-    OutlinedCard(modifier = Modifier.padding(8.dp)) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Card(shape = CircleShape) {
-                    Icon(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(32.dp),
-                        painter = painterResource(R.drawable.icon_person),
-                        contentDescription = ""
-                    )
-                }
 
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        appointment.title,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        appointment.personName,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
-                    )
-                    Text(
-                        appointment.phoneNumber,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                IconButton({
-                    deleteItem()
-                }) {
-                    Icon(
-                        tint = Color(0xFFF44336),
-                        modifier = Modifier
-                            .size(32.dp),
-                        painter = painterResource(R.drawable.icon_delete),
-                        contentDescription = ""
-                    )
-                }
-            }
-
-            HorizontalDivider(
-                modifier = Modifier.padding(8.dp),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
-            )
-            Text(
-                appointment.title,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                appointment.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
-            )
-            Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = appointment.startTime,
-                        textAlign = TextAlign.Center,
-
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary.copy(0.5f)
-                    )
-
-                    Text(
-                        modifier = Modifier.weight(1f),
-
-                        text = appointment.endTime,
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary.copy(0.5f)
-                    )
-
-                }
-            }
-
-        }
-
-    }
-}
 
 
 

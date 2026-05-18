@@ -24,7 +24,9 @@ class AppointmentListViewModel(
 
     var connectStatus = mutableStateOf(false)
 
-    var id = mutableIntStateOf(0)
+    var itemId = mutableIntStateOf(0)
+
+    val openAlertDialog = mutableStateOf(false)
 
     fun appointmentLoad() {
         viewModelScope.launch {
