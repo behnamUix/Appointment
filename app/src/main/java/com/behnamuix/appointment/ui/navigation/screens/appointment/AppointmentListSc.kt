@@ -30,9 +30,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,10 +58,13 @@ fun AppointmentListSc(
     val openAlertDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
     var list = appointmentListViewModel.appointmentList.collectAsState()
+
     LaunchedEffect(Unit) {
         appointmentListViewModel.appointmentLoad()
         appointmentListViewModel.checkInternet(ctx = context)
     }
+
+
     Column(
         Modifier
             .fillMaxSize()
@@ -131,7 +136,12 @@ fun AppointmentListSc(
             DeleteDialog(
                 "delete reason",
                 appointmentListViewModel
-            )
+
+                ) {
+                openAlertDialog.value = it
+
+
+            }
         }
     }
 
@@ -140,7 +150,8 @@ fun AppointmentListSc(
 @Composable
 fun DeleteDialog(
     label: String,
-    vm: AppointmentListViewModel
+    vm: AppointmentListViewModel,
+    dialog: (Boolean) -> Unit
 ) {
     var text by remember { mutableStateOf("") }
     val id = vm.id.value
@@ -151,7 +162,7 @@ fun DeleteDialog(
         text = {
             OutlinedTextField(
                 label = { Text(label) },
-                modifier = Modifier.width(200.dp),
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 value = text, onValueChange = { text = it })
         },
@@ -162,6 +173,9 @@ fun DeleteDialog(
             TextButton(
                 onClick = {
                     vm.appointmentDelete(id, text)
+                    dialog(false)
+
+
 
                 }
             ) {
@@ -171,7 +185,7 @@ fun DeleteDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-
+                    dialog(false)
                 }
             ) {
                 Text("Dismiss")

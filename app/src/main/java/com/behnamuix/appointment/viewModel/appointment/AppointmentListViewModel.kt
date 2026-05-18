@@ -38,9 +38,16 @@ class AppointmentListViewModel(
 
     fun appointmentDelete(id: Int, reason: String) {
         viewModelScope.launch {
-            appointmentDeleteRepo.delete(id, reason)
-
+            val success = appointmentDeleteRepo.delete(id, reason)
+            if (success.success) {
+                _appointmentList.value = _appointmentList.value?.let { response ->
+                    response.copy(
+                        data = response.data.copy(
+                            data = response.data.data.filter { it.id != id }
+                        )
+                    )
+                }
+            }
         }
-
     }
 }

@@ -15,6 +15,6 @@ data class ApiRequest(
 )
 @Serializable
 data class AppointmentDeleteRequest(
-    val id: Int,
+    val Id: Int,
     val deleteReason: String
 )

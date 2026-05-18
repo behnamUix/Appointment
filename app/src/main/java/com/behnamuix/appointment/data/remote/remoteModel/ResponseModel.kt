@@ -37,7 +37,7 @@ data class Item(
 @Serializable
 data class DeleteResponse(
     val success: Boolean,
-    val message: String,
+    val message: String?="",
     val data:Int
 )
 
