@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -20,10 +23,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,18 +46,18 @@ import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.remote.remoteModel.Item
 import com.behnamuix.appointment.ui.theme.navigation.Routes
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AppointmentListSc(
     navController: NavHostController,
-    appointmentListViewModel: AppointmentListViewModel = koinViewModel()
+    appointmentListViewModel: AppointmentListViewModel = koinViewModel(),
 ) {
+    val openAlertDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
     var list = appointmentListViewModel.appointmentList.collectAsState()
     LaunchedEffect(Unit) {
-        appointmentListViewModel.load()
+        appointmentListViewModel.appointmentLoad()
         appointmentListViewModel.checkInternet(ctx = context)
     }
     Column(
@@ -58,6 +67,7 @@ fun AppointmentListSc(
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
+
         Spacer(modifier = Modifier.height(16.dp))
         ToolbarComp(
             "Appointment list", onBackClick = {
@@ -73,7 +83,11 @@ fun AppointmentListSc(
             if (list.value?.success ?: false) {
                 LazyColumn {
                     items(list.value!!.data.data) {
-                        AppointmentCard(it)
+                        AppointmentCard(it) {
+                            appointmentListViewModel.id.intValue = it.id
+                            openAlertDialog.value = true
+
+                        }
 
                     }
                 }
@@ -113,8 +127,56 @@ fun AppointmentListSc(
 
 
         }
+        if (openAlertDialog.value) {
+            DeleteDialog(
+                "delete reason",
+                appointmentListViewModel
+            )
+        }
     }
 
+}
+
+@Composable
+fun DeleteDialog(
+    label: String,
+    vm: AppointmentListViewModel
+) {
+    var text by remember { mutableStateOf("") }
+    val id = vm.id.value
+    AlertDialog(
+        title = {
+            Text(text = "warning")
+        },
+        text = {
+            OutlinedTextField(
+                label = { Text(label) },
+                modifier = Modifier.width(200.dp),
+                shape = RoundedCornerShape(16.dp),
+                value = text, onValueChange = { text = it })
+        },
+        onDismissRequest = {
+
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    vm.appointmentDelete(id, text)
+
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+
+                }
+            ) {
+                Text("Dismiss")
+            }
+        })
 }
 
 
@@ -158,7 +220,7 @@ fun ToolbarComp(title: String, onAddClick: () -> Unit, onBackClick: () -> Unit) 
 }
 
 @Composable
-fun AppointmentCard(appointment: Item) {
+fun AppointmentCard(appointment: Item, deleteItem: () -> Unit) {
     OutlinedCard(modifier = Modifier.padding(8.dp)) {
         Column(
             modifier = Modifier.padding(12.dp),
@@ -184,13 +246,20 @@ fun AppointmentCard(appointment: Item) {
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
+                        appointment.personName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+                    )
+                    Text(
                         appointment.phoneNumber,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
                     )
                 }
                 Spacer(Modifier.weight(1f))
-                IconButton({}) {
+                IconButton({
+                    deleteItem()
+                }) {
                     Icon(
                         tint = Color(0xFFF44336),
                         modifier = Modifier

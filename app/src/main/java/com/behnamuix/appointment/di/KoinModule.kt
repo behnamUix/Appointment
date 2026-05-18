@@ -1,5 +1,6 @@
 package com.behnamuix.appointment.di
 
+import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentDeleteRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentListRepo
 import com.behnamuix.appointment.viewModel.appointment.AddAppointmentViewModel
 import com.behnamuix.appointment.viewModel.people.AddPeopleViewModel
@@ -28,21 +29,22 @@ val networkModule = module {
                 })
             }
             //set header
-            install(DefaultRequest){
-                headers.append("accept","*/*")
-                headers.append("Content-Type","application/json")
+            install(DefaultRequest) {
+                headers.append("accept", "*/*")
+                headers.append("Content-Type", "application/json")
             }
         }
     }
 }
 val repositoryModule = module {
     single { AppointmentListRepo(get()) }
+    single { AppointmentDeleteRepo(get()) }
 }
 
 val viewModelModule = module {
     viewModel { SplashViewModel() }
     viewModel { HomeViewModel() }
-    viewModel { AppointmentListViewModel(get()) }
+    viewModel { AppointmentListViewModel(get(), get()) }
     viewModel { AddAppointmentViewModel() }
     viewModel { PeopleListViewModel() }
     viewModel { AddPeopleViewModel() }

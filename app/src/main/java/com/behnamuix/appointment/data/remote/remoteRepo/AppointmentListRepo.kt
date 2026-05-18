@@ -11,7 +11,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class AppointmentListRepo(private val client: HttpClient) {
-    val apiRequest = ApiRequest(start = 0, lenght = 100, removedState = 1)
+    val apiRequest = ApiRequest(start = 0, lenght = 100, removedState = 0)
     suspend fun getAppointmentList(): ApiResponse? {
         return try {
             client.post(APPOINTMENT_LIST_URL) {
