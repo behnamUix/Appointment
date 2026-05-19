@@ -38,7 +38,7 @@ fun AppNavGraph() {
             })
         }
         composable(Screen.AppointmentAdd.route) {
-            AppointmentAddSc(navController)
+            AppointmentAddSc(navController,)
         }
         composable(Screen.AppointmentList.route) {
             AppointmentListSc(navController)

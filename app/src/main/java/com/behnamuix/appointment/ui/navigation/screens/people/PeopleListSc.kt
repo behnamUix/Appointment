@@ -78,8 +78,8 @@ fun PeopleListSc(
                 LazyColumn {
                     items(list.value) { people ->
                         PeopleCard(people, onCardClick = {
-                            onItemClick(people.id)
                             Log.d("ID",people.id.toString())
+                            onItemClick(people.id)
                         })
 
                     }

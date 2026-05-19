@@ -46,10 +46,10 @@ import java.util.Calendar
 @Composable
 fun AppointmentAddSc(
     navController: NavHostController,
-    addVm: AddAppointmentViewModel = koinViewModel(),
+    addVm: AddAppointmentViewModel = koinViewModel()
 ) {
-    val personId =
-        navController.currentBackStackEntry?.arguments?.getString("personId")
+    val personId = navController.currentBackStackEntry?.arguments?.getString("personId")
+
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -120,18 +120,21 @@ fun AppointmentAddSc(
             Button(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-                    if (personId?.toInt() == 0) {
 
-                    } else {
-                        addVm.save(
-                            personId?.toInt() ?: 0,
-                            addVm.selectedStartDate.value,
-                            endTime = addVm.selectedEndDateText.value,
-                            addVm.title.value,
-                            addVm.desc.value
-                        )
-                        navController.popBackStack()
+                    addVm.save(
+                        personId?.toInt() ?: 0,
+                        addVm.selectedStartDate.value,
+                        endTime = addVm.selectedEndDateText.value,
+                        addVm.title.value,
+                        addVm.desc.value
+                    )
+                    //harchi navigation ghabl az list bood remove mishe
+                    navController.navigate(Screen.AppointmentList.route) {
+                        popUpTo(Screen.AppointmentList.route) {
+                            inclusive = true
+                        }
                     }
+
 
                 }, modifier = Modifier.fillMaxWidth()
             ) {
@@ -218,7 +221,7 @@ fun PickDateTimeComp(
 
                                 addVm.selectedStartDate.value = unixTimeMillis.toInt()
                             },
-                            calendarStart.get(Calendar.HOUR_OF_DAY),
+                            calendarStart.get(Calendar.HOUR),
                             calendarStart.get(Calendar.MINUTE),
                             true
                         )
@@ -261,7 +264,7 @@ fun PickDateTimeComp(
 
                                 addVm.selectedEndDateText.value = unixTimeMillis.toInt()
                             },
-                            calendarEnd.get(Calendar.HOUR_OF_DAY),
+                            calendarEnd.get(Calendar.HOUR),
                             calendarEnd.get(Calendar.MINUTE),
                             true
                         )
