@@ -15,33 +15,37 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
-import com.behnamuix.appointment.data.local.model.FakePeople
 import com.behnamuix.appointment.data.remote.remoteModel.people.PeopleData
-import com.behnamuix.appointment.ui.navigation.screens.appointment.AppointmentCard
 import com.behnamuix.appointment.ui.navigation.screens.appointment.ToolbarComp
 import com.behnamuix.appointment.ui.theme.navigation.Screen
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import com.behnamuix.appointment.viewModel.people.PeopleListViewModel
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -77,9 +81,16 @@ fun PeopleListSc(
             if (list.value?.success ?: false) {
                 LazyColumn {
                     items(list.value?.data?.data ?: emptyList()) {
-                        PeopleCard(it) {
+                        PeopleCard(it, deleteItem = {
+                            peopleVm.itemId.intValue = it.id
+                            Log.d("ID", peopleVm.itemId.value.toString())
+                            peopleVm.openAlertDialog.value = true
+
+                        }) {
+
                             onItemClick(it.id)
-                            listVm.itemId.intValue = it.id
+                            peopleVm.itemId.intValue = it.id
+
                         }
 
                     }
@@ -111,11 +122,63 @@ fun PeopleListSc(
 
 
         }
+        if (peopleVm.openAlertDialog.value) {
+            DeletePeopleDialogComp(
+                "people delete reason",
+                peopleVm
+            ) {
+                peopleVm.openAlertDialog.value = it
+
+            }
+        }
     }
 }
 
 @Composable
-fun PeopleCard(people: PeopleData, onCardClick: () -> Unit) {
+fun DeletePeopleDialogComp(
+    label: String,
+    vm: PeopleListViewModel,
+    dialog: (Boolean) -> Unit
+) {
+    var text by remember { mutableStateOf("example reason!") }
+    val id = vm.itemId.value
+    AlertDialog(
+        title = {
+            Text(text = "warning")
+        },
+        text = {
+            OutlinedTextField(
+                label = { Text(label) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                value = text, onValueChange = { text = it })
+        },
+        onDismissRequest = {
+
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    vm.peopleDelete(id, text)
+                    dialog(false)
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    dialog(false)
+                }
+            ) {
+                Text("Dismiss")
+            }
+        })
+}
+
+@Composable
+fun PeopleCard(people: PeopleData, deleteItem: () -> Unit, onCardClick: () -> Unit) {
     OutlinedCard(modifier = Modifier.padding(8.dp), onClick = { onCardClick() }) {
         Column(
             modifier = Modifier.padding(12.dp),
@@ -164,7 +227,9 @@ fun PeopleCard(people: PeopleData, onCardClick: () -> Unit) {
                     )
                 }
                 Spacer(Modifier.weight(1f))
-                IconButton({}) {
+                IconButton({
+                    deleteItem()
+                }) {
                     Icon(
                         tint = Color(0xFFF44336),
                         modifier = Modifier
