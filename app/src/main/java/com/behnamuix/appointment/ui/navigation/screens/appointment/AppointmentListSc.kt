@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
-import com.behnamuix.appointment.data.remote.remoteModel.Item
+import com.behnamuix.appointment.data.remote.remoteModel.appointment.Item
 import com.behnamuix.appointment.ui.theme.navigation.Screen
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -79,8 +79,6 @@ fun AppointmentListSc(
         Spacer(modifier = Modifier.height(16.dp))
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (list.value?.success ?: false) {
-                Log.d("LIST", list.value?.data?.totalCount.toString())
-
                 LazyColumn {
                     items(list.value!!.data.data) {
                         AppointmentCard(it) {

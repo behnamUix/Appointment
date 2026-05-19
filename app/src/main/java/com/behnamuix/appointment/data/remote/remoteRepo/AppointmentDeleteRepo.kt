@@ -2,7 +2,7 @@ package com.behnamuix.appointment.data.remote.remoteRepo
 
 import com.behnamuix.appointment.const.APPOINTMENT_DELETE_URL
 import com.behnamuix.appointment.data.remote.remoteModel.DeleteRequest
-import com.behnamuix.appointment.data.remote.remoteModel.DeleteResponse
+import com.behnamuix.appointment.data.remote.remoteModel.appointment.DeleteResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post

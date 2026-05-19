@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.behnamuix.appointment.data.remote.remoteModel.ApiResponse
+import com.behnamuix.appointment.data.remote.remoteModel.appointment.ApiResponse
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentDeleteRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentListRepo
 import com.behnamuix.appointment.utils.isInternetAvailable

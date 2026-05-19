@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,14 +28,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.local.model.FakePeople
+import com.behnamuix.appointment.data.remote.remoteModel.people.PeopleData
+import com.behnamuix.appointment.ui.navigation.screens.appointment.AppointmentCard
 import com.behnamuix.appointment.ui.navigation.screens.appointment.ToolbarComp
 import com.behnamuix.appointment.ui.theme.navigation.Screen
+import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import com.behnamuix.appointment.viewModel.people.PeopleListViewModel
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -43,12 +48,14 @@ import org.koin.androidx.compose.koinViewModel
 fun PeopleListSc(
     navController: NavHostController,
     peopleVm: PeopleListViewModel = koinViewModel(),
+    listVm: AppointmentListViewModel = koinViewModel(),
     onItemClick: (Int) -> Unit
 ) {
     var list = peopleVm.peopleList.collectAsState()
     LaunchedEffect(Unit) {
-        delay(2000)
-        peopleVm.loadFakeList()
+
+        peopleVm.loadPeopleList()
+
     }
     Column(
         Modifier
@@ -67,23 +74,39 @@ fun PeopleListSc(
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            if (list.value.isEmpty()) {
-                Text(
-                    "Loading , please wait...",
-                    color = MaterialTheme.colorScheme.onPrimary.copy(0.4f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
+            if (list.value?.success ?: false) {
                 LazyColumn {
-                    items(list.value) { people ->
-                        PeopleCard(people, onCardClick = {
-                            Log.d("ID",people.id.toString())
-                            onItemClick(people.id)
-                        })
+                    items(list.value?.data?.data ?: emptyList()) {
+                        PeopleCard(it) {
+                            onItemClick(it.id)
+                            listVm.itemId.intValue = it.id
+                        }
 
                     }
                 }
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(0.5f)
+                        )
+                        Text(
+                            "Loading , please wait...",
+                            color = MaterialTheme.colorScheme.onPrimary.copy(0.4f),
+                            textAlign = TextAlign.Center,
+
+                            )
+                    }
+
+                }
+
             }
 
 
@@ -92,7 +115,7 @@ fun PeopleListSc(
 }
 
 @Composable
-fun PeopleCard(people: FakePeople, onCardClick: () -> Unit) {
+fun PeopleCard(people: PeopleData, onCardClick: () -> Unit) {
     OutlinedCard(modifier = Modifier.padding(8.dp), onClick = { onCardClick() }) {
         Column(
             modifier = Modifier.padding(12.dp),

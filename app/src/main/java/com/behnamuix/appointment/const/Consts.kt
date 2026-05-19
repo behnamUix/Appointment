@@ -7,3 +7,7 @@ const val APPOINTMENT_LIST_URL = "https://fronttest.zhenic.com/api/Appointments/
 const val APPOINTMENT_DELETE_URL = "https://fronttest.zhenic.com/api/Appointments/Delete"
 
 const val APPOINTMENT_ADD_URL = "https://fronttest.zhenic.com/api/Appointments/Save"
+
+const val PEOPLE_LIST_URL = "https://fronttest.zhenic.com/api/People/GetList"
+
+const val PEOPLE_DELETE_URL = "https://fronttest.zhenic.com/api/People/Delete"

@@ -1,17 +1,21 @@
 package com.behnamuix.appointment.viewModel.people
 
 import androidx.lifecycle.ViewModel
-import com.behnamuix.appointment.data.local.fake.fakePeoples
-import com.behnamuix.appointment.data.local.model.FakePeople
+import androidx.lifecycle.viewModelScope
+import com.behnamuix.appointment.data.remote.remoteModel.people.ApiResponsePeople
+import com.behnamuix.appointment.data.remote.remoteRepo.PeopleListRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class PeopleListViewModel : ViewModel() {
-    var _peopleList = MutableStateFlow<List<FakePeople>>(emptyList())
-    var peopleList: StateFlow<List<FakePeople>> = _peopleList.asStateFlow()
-    fun loadFakeList() {
-        _peopleList.value = fakePeoples
+class PeopleListViewModel(val peopleRepo: PeopleListRepo) : ViewModel() {
+    var _peopleList = MutableStateFlow<ApiResponsePeople?>(null)
+    var peopleList: StateFlow<ApiResponsePeople?> = _peopleList.asStateFlow()
+    fun loadPeopleList() {
+        viewModelScope.launch {
+            _peopleList.value = peopleRepo.getPeopleList()
+        }
     }
 
 }

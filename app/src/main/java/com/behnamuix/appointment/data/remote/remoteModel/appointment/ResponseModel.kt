@@ -1,4 +1,4 @@
-package com.behnamuix.appointment.data.remote.remoteModel
+package com.behnamuix.appointment.data.remote.remoteModel.appointment
 
 import kotlinx.serialization.Serializable
 
@@ -45,4 +45,3 @@ data class AddAppointmentResponse(
     val message: String? = "",
     val data: Int?
 )
-

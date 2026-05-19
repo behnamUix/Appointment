@@ -2,7 +2,7 @@ package com.behnamuix.appointment.data.remote.remoteRepo
 
 import com.behnamuix.appointment.const.APPOINTMENT_ADD_URL
 import com.behnamuix.appointment.data.remote.remoteModel.AddAppointmentRequest
-import com.behnamuix.appointment.data.remote.remoteModel.AddAppointmentResponse
+import com.behnamuix.appointment.data.remote.remoteModel.appointment.AddAppointmentResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
