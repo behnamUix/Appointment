@@ -33,7 +33,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
-import com.behnamuix.appointment.ui.theme.navigation.Routes
+import com.behnamuix.appointment.ui.theme.navigation.Screen
+
 import com.behnamuix.appointment.viewModel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 import kotlin.system.exitProcess
@@ -68,11 +69,11 @@ fun HomeSc(navController: NavHostController, homeViewModel: HomeViewModel = koin
                 verticalArrangement = Arrangement.spacedBy(32.dp)
             ) {
                 FuncCardComp("appointments", R.drawable.icon_apointment) {
-                    navController.navigate(Routes.APPOINTMENT_LIST)
+                    navController.navigate(Screen.AppointmentList.route)
 
                 }
                 FuncCardComp("people", R.drawable.icon_user) {
-                    navController.navigate(Routes.PEOPLE_LIST)
+                    navController.navigate(Screen.PeopleList.route)
 
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
@@ -83,7 +84,7 @@ fun HomeSc(navController: NavHostController, homeViewModel: HomeViewModel = koin
                     }
                     Spacer(Modifier.weight(1f))
                     FuncCardSmall("removed", R.drawable.icon_delete) {
-                        navController.navigate(Routes.REMOVED_LIST)
+                        navController.navigate(Screen.RemovedList.route)
 
                     }
                 }

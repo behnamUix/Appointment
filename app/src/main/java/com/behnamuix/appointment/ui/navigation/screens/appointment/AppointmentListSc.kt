@@ -1,5 +1,6 @@
 package com.behnamuix.appointment.ui.navigation.screens.appointment
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.remote.remoteModel.Item
-import com.behnamuix.appointment.ui.theme.navigation.Routes
+import com.behnamuix.appointment.ui.theme.navigation.Screen
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -54,9 +55,9 @@ fun AppointmentListSc(
     val context = LocalContext.current
     val list = vm.appointmentList.collectAsState()
 
-    LaunchedEffect(Unit) {
-        vm.checkInternet(ctx = context)
+    LaunchedEffect(list, Unit) {
         vm.appointmentLoad()
+        vm.checkInternet(ctx = context)
     }
 
 
@@ -73,11 +74,13 @@ fun AppointmentListSc(
                 navController.popBackStack()
             },
             onAddClick = {
-                navController.navigate(Routes.APPOINTMENT_ADD)
+                navController.navigate(Screen.AppointmentAdd.route)
             })
         Spacer(modifier = Modifier.height(16.dp))
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (list.value?.success ?: false) {
+                Log.d("LIST", list.value?.data?.totalCount.toString())
+
                 LazyColumn {
                     items(list.value!!.data.data) {
                         AppointmentCard(it) {

@@ -3,8 +3,6 @@ package com.behnamuix.appointment.data.remote.remoteModel
 import kotlinx.serialization.Serializable
 
 
-
-
 @Serializable
 data class ApiResponse(
     val success: Boolean,
@@ -37,7 +35,14 @@ data class Item(
 @Serializable
 data class DeleteResponse(
     val success: Boolean,
-    val message: String?="",
-    val data:Int
+    val message: String? = "",
+    val data: Int
+)
+
+@Serializable
+data class AddAppointmentResponse(
+    val success: Boolean?,
+    val message: String? = "",
+    val data: Int?
 )
 

@@ -17,28 +17,33 @@ fun AppNavGraph() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Routes.APPOINTMENT_LIST
+        startDestination = Screen.Home.route
 
     ) {
-        composable(Routes.SPLASH) {
+        composable(Screen.Splash.route) {
             SplashSc(navController)
         }
-        composable(Routes.HOME) {
+        composable(Screen.Home.route) {
             HomeSc(navController)
         }
-        composable(Routes.PEOPLE_ADD) {
-            PeopleAddSc(navController)
+        composable(Screen.PeopleAdd.route) {
+            PeopleAddSc(
+                navController
+            )
         }
-        composable(Routes.PEOPLE_LIST) {
-            PeopleListSc(navController)
+        composable(Screen.PeopleList.route) {
+            PeopleListSc(navController,
+                onItemClick = { personId ->
+                navController.navigate(Screen.AppointmentAdd.createRoute(personId))
+            })
         }
-        composable(Routes.APPOINTMENT_ADD) {
+        composable(Screen.AppointmentAdd.route) {
             AppointmentAddSc(navController)
         }
-        composable(Routes.APPOINTMENT_LIST) {
+        composable(Screen.AppointmentList.route) {
             AppointmentListSc(navController)
         }
-        composable(Routes.REMOVED_LIST) {
+        composable(Screen.RemovedList.route) {
             RemovedListSc(navController)
         }
 

@@ -1,5 +1,6 @@
 package com.behnamuix.appointment.ui.theme.navigation.screens.people
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.local.model.FakePeople
-import com.behnamuix.appointment.ui.theme.navigation.Routes
 import com.behnamuix.appointment.ui.navigation.screens.appointment.ToolbarComp
+import com.behnamuix.appointment.ui.theme.navigation.Screen
 import com.behnamuix.appointment.viewModel.people.PeopleListViewModel
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -41,7 +42,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PeopleListSc(
     navController: NavHostController,
-    peopleVm: PeopleListViewModel = koinViewModel()
+    peopleVm: PeopleListViewModel = koinViewModel(),
+    onItemClick: (Int) -> Unit
 ) {
     var list = peopleVm.peopleList.collectAsState()
     LaunchedEffect(Unit) {
@@ -61,7 +63,7 @@ fun PeopleListSc(
             onBackClick = {
                 navController.popBackStack()
             },
-            onAddClick = { navController.navigate(Routes.PEOPLE_ADD) })
+            onAddClick = { navController.navigate(Screen.PeopleAdd.route) })
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -74,8 +76,11 @@ fun PeopleListSc(
                 )
             } else {
                 LazyColumn {
-                    items(list.value) {
-                        PeopleCard(it)
+                    items(list.value) { people ->
+                        PeopleCard(people, onCardClick = {
+                            onItemClick(people.id)
+                            Log.d("ID",people.id.toString())
+                        })
 
                     }
                 }
@@ -87,8 +92,8 @@ fun PeopleListSc(
 }
 
 @Composable
-fun PeopleCard(people: FakePeople) {
-    OutlinedCard(modifier = Modifier.padding(8.dp)) {
+fun PeopleCard(people: FakePeople, onCardClick: () -> Unit) {
+    OutlinedCard(modifier = Modifier.padding(8.dp), onClick = { onCardClick() }) {
         Column(
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)

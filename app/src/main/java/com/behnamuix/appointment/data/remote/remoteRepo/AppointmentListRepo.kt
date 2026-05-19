@@ -1,5 +1,6 @@
 package com.behnamuix.appointment.data.remote.remoteRepo
 
+import android.util.Log
 import com.behnamuix.appointment.const.APPOINTMENT_LIST_URL
 import com.behnamuix.appointment.data.remote.remoteModel.ApiRequest
 import com.behnamuix.appointment.data.remote.remoteModel.ApiResponse
@@ -20,6 +21,8 @@ class AppointmentListRepo(private val client: HttpClient) {
             }.body()
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d("TAg", e.toString())
+
             null
         }
     }

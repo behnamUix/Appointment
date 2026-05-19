@@ -1,16 +1,19 @@
 package com.behnamuix.appointment.ui.theme.navigation
 
-object Routes {
-    const val SPLASH = "splash"
-    const val HOME = "home"
 
-    const val APPOINTMENT_LIST = "appointment_list"
-    const val APPOINTMENT_ADD = "appointment_add"
+sealed class Screen(val route: String) {
+    object Splash : Screen("splash")
+    object Home : Screen("home")
 
-    const val PEOPLE_ADD = "people_add"
-    const val PEOPLE_LIST = "people_list"
+    object AppointmentList : Screen("appointment_list")
+    object AppointmentAdd : Screen("appointment_add/{personId}") {
+        fun createRoute(personId: Int) = "appointment_add/$personId"
+    }
 
-    const val REMOVED_LIST = "removed_list"
+    object PeopleAdd : Screen("people_add")
+    object PeopleList : Screen("people_list")
 
-
+    object RemovedList : Screen("removed_list")
 }
+
+

@@ -8,13 +8,18 @@ data class ApiRequest(
     var start: Int = 0,
     var lenght: Int = 100,
     var removedState: Int = 0,
-    var from: Int = 0,
-    var to: Int = 0,
-    var title: String = "string",
-    var personId: Int = 0
 )
+
 @Serializable
-data class AppointmentDeleteRequest(
+data class DeleteRequest(
     val Id: Int,
     val deleteReason: String
+)
+@Serializable
+data class AddAppointmentRequest(
+    val personId: Int = 0,
+    val startTime: Int = 0,
+    val endTime: Int = 0,
+    val title: String? = "",
+    val description: String? = ""
 )

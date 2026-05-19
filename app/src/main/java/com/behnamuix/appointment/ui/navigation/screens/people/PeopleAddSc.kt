@@ -37,6 +37,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun PeopleAddSc(
     navController: NavHostController,
     addPeopleVm: AddPeopleViewModel = koinViewModel()
+
 ) {
     val showError = addPeopleVm.error
     Column(

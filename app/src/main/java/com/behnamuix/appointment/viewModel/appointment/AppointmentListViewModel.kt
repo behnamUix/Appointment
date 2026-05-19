@@ -34,10 +34,6 @@ class AppointmentListViewModel(
         }
     }
 
-    fun checkInternet(ctx: Context) {
-        connectStatus.value = isInternetAvailable(ctx)
-    }
-
     fun appointmentDelete(id: Int, reason: String) {
         viewModelScope.launch {
             val success = appointmentDeleteRepo.delete(id, reason)
@@ -51,5 +47,8 @@ class AppointmentListViewModel(
                 }
             }
         }
+    }
+    fun checkInternet(ctx: Context) {
+        connectStatus.value = isInternetAvailable(ctx)
     }
 }

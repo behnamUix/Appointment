@@ -29,7 +29,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
-import com.behnamuix.appointment.ui.theme.navigation.Routes
+import com.behnamuix.appointment.ui.theme.navigation.Screen
+
 import com.behnamuix.appointment.viewModel.SplashViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -72,7 +73,7 @@ fun SplashSc(
         splashVm.showHomeSc(ctx)
         goHome.collect {
             if (it) {
-                navController.navigate(Routes.HOME)
+                navController.navigate(Screen.Home.route)
 
             }
         }
