@@ -9,7 +9,7 @@ import com.behnamuix.appointment.ui.theme.navigation.screens.SplashSc
 import com.behnamuix.appointment.ui.theme.navigation.screens.appointment.AppointmentAddSc
 import com.behnamuix.appointment.ui.navigation.screens.appointment.AppointmentListSc
 import com.behnamuix.appointment.ui.theme.navigation.screens.people.PeopleAddSc
-import com.behnamuix.appointment.ui.theme.navigation.screens.people.PeopleListSc
+import com.behnamuix.appointment.ui.navigation.screens.people.PeopleListSc
 import com.behnamuix.appointment.ui.theme.navigation.screens.removed.RemovedListSc
 
 @Composable

@@ -1,4 +1,4 @@
-package com.behnamuix.appointment.ui.theme.navigation.screens.people
+package com.behnamuix.appointment.ui.navigation.screens.people
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -44,7 +44,6 @@ import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.remote.remoteModel.people.PeopleData
 import com.behnamuix.appointment.ui.navigation.screens.appointment.ToolbarComp
 import com.behnamuix.appointment.ui.theme.navigation.Screen
-import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import com.behnamuix.appointment.viewModel.people.PeopleListViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -52,10 +51,9 @@ import org.koin.androidx.compose.koinViewModel
 fun PeopleListSc(
     navController: NavHostController,
     peopleVm: PeopleListViewModel = koinViewModel(),
-    listVm: AppointmentListViewModel = koinViewModel(),
     onItemClick: (Int) -> Unit
 ) {
-    var list = peopleVm.peopleList.collectAsState()
+    val list = peopleVm.peopleList.collectAsState()
     LaunchedEffect(Unit) {
 
         peopleVm.loadPeopleList()
@@ -135,6 +133,79 @@ fun PeopleListSc(
 }
 
 @Composable
+fun PeopleCard(people: PeopleData, deleteItem: () -> Unit, onCardClick: () -> Unit) {
+    OutlinedCard(modifier =
+        Modifier.padding(8.dp),
+        onClick = { onCardClick() }) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(R.drawable.icon_apointment),
+                    contentDescription = "",
+                    modifier = Modifier.size(32.dp)
+                )
+                Text(
+                    text = "  " + people.appointmentsCount.toString(),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Card(shape = CircleShape) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(32.dp),
+                        painter = painterResource(R.drawable.icon_person),
+                        contentDescription = ""
+                    )
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        "${people.firstName} ${people.lastName}",
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 2,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
+                    Text(
+                        people.phoneNumber,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+                    )
+                    Text(
+                        people.socialNumber,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+                IconButton({
+                    deleteItem()
+                }) {
+                    Icon(
+                        tint = Color(0xFFF44336),
+                        modifier = Modifier
+                            .size(32.dp),
+                        painter = painterResource(R.drawable.icon_delete),
+                        contentDescription = ""
+                    )
+                }
+            }
+
+
+        }
+
+    }
+}
+@Composable
 fun DeletePeopleDialogComp(
     label: String,
     vm: PeopleListViewModel,
@@ -175,73 +246,4 @@ fun DeletePeopleDialogComp(
                 Text("Dismiss")
             }
         })
-}
-
-@Composable
-fun PeopleCard(people: PeopleData, deleteItem: () -> Unit, onCardClick: () -> Unit) {
-    OutlinedCard(modifier = Modifier.padding(8.dp), onClick = { onCardClick() }) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(R.drawable.icon_apointment),
-                    contentDescription = "",
-                    modifier = Modifier.size(32.dp)
-                )
-                Text(
-                    text = "  " + people.appointmentsCount.toString(),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Card(shape = CircleShape) {
-                    Icon(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(32.dp),
-                        painter = painterResource(R.drawable.icon_person),
-                        contentDescription = ""
-                    )
-                }
-
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-
-                    Text(
-                        "${people.firstName} ${people.lastName}",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        people.phoneNumber,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
-                    )
-                    Text(
-                        people.socialNumber,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                IconButton({
-                    deleteItem()
-                }) {
-                    Icon(
-                        tint = Color(0xFFF44336),
-                        modifier = Modifier
-                            .size(32.dp),
-                        painter = painterResource(R.drawable.icon_delete),
-                        contentDescription = ""
-                    )
-                }
-            }
-
-
-        }
-
-    }
 }

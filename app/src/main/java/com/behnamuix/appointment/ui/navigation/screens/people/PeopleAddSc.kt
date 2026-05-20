@@ -88,10 +88,9 @@ fun PeopleAddSc(
             Button(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-                    addPeopleVm.checkValue()
                     addPeopleVm.addPeople()
                     setMessage("people added", addPeopleVm.msg)
-                    navController.popBackStack()
+                    //navController.popBackStack()
 
 
                 }, modifier = Modifier.fillMaxWidth()
@@ -126,7 +125,7 @@ fun MyNameTextField(
     showError: State<Boolean>
 ) {
     OutlinedTextField(
-
+        maxLines = 1,
         isError = showError.value,
         label = { Text(label) },
         modifier = Modifier.width(200.dp),
@@ -155,7 +154,7 @@ fun MyPhoneTextField(
         label = { Text(label) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        value = addVm.value, onValueChange = { addVm.value = it })
+        value = addVm.value, onValueChange = { if(addVm.value.length<=11){addVm.value = it} })
 
 
 }
@@ -180,5 +179,5 @@ fun SocialNumberTextField(
         label = { Text(label) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        value = addVm.value, onValueChange = { addVm.value = it })
+        value = addVm.value, onValueChange = { if(addVm.value.length<=10){addVm.value = it} })
 }

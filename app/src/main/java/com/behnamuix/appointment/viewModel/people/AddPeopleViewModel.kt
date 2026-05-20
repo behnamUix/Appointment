@@ -31,6 +31,7 @@ class AddPeopleViewModel(private val peopleAddRepo: PeopleAddRepo) : ViewModel()
 
     fun addPeople() {
         viewModelScope.launch {
+            checkValue()
             var resp = peopleAddRepo.addPeople(
                 firestName.value,
                 lastName.value,
@@ -38,6 +39,7 @@ class AddPeopleViewModel(private val peopleAddRepo: PeopleAddRepo) : ViewModel()
                 phoneNumber.value
             )
             if (resp?.success ?: false) {
+                _showToast.emit(true)
                 firestName.value = ""
                 lastName.value = ""
                 phoneNumber.value = ""
