@@ -24,6 +24,9 @@ class AddAppointmentViewModel(private val addRepo: AppointmentAddRepo) : ViewMod
 
     var toastMsg = mutableStateOf("")
 
+    var startDate=mutableStateOf("")
+    var endDate=mutableStateOf("")
+
     fun addAppointment(personId: String?) {
         viewModelScope.launch {
             try {

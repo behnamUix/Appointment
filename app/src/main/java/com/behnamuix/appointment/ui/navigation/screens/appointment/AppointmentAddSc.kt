@@ -38,9 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
 import com.behnamuix.appointment.ui.theme.navigation.Screen
+import com.behnamuix.appointment.utils.dateTimeFormat
 import com.behnamuix.appointment.viewModel.appointment.AddAppointmentViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
+import java.util.TimeZone
 
 @Composable
 fun AppointmentAddSc(
@@ -80,7 +82,10 @@ fun AppointmentAddSc(
             )
         Spacer(modifier = Modifier.height(24.dp))
 
-        Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -186,92 +191,113 @@ fun PickDateTimeComp(
     onDateTimePicked: (Long) -> Unit
 ) {
     val context = LocalContext.current
-    val calendarStart = Calendar.getInstance()
-    val calendarEnd = Calendar.getInstance()
+    val tehranTimeZone = TimeZone.getTimeZone("Asia/Tehran")
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+    val calendarStart = Calendar.getInstance(tehranTimeZone)
+    val calendarEnd = Calendar.getInstance(tehranTimeZone)
+
+
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        OutlinedButton(
-            modifier = Modifier.size(110.dp),
-            shape = CircleShape,
-            onClick = {
-                val datePicker = DatePickerDialog(
-                    context,
-                    { _, year, month, dayOfMonth ->
-                        val timePicker = TimePickerDialog(
-                            context,
-                            { _, hour, minute ->
-                                calendarStart.set(year, month, dayOfMonth, hour, minute, 0)
-                                //converter
-                                val unixTimeMillis = calendarStart.timeInMillis
-                                Log.d("TIME-S",unixTimeMillis.toString())
-                                onDateTimePicked(unixTimeMillis)
-
-                                addVm.selectedStartDate.value = unixTimeMillis.toInt()
-                            },
-                            calendarStart.get(Calendar.HOUR_OF_DAY),
-                            calendarStart.get(Calendar.MINUTE),
-                            true
-                        )
-                        timePicker.show()
-                    },
-                    calendarStart.get(Calendar.YEAR),
-                    calendarStart.get(Calendar.MONTH),
-                    calendarStart.get(Calendar.DAY_OF_MONTH)
-                )
-                datePicker.show()
-            }) {
-            Text(" start date", textAlign = TextAlign.Center)
-        }
-
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.secondary,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier
-                .weight(0.5f)
-                .padding(6.dp)
-        )
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
 
-        OutlinedButton(
+            OutlinedButton(
+                modifier = Modifier.size(110.dp),
+                shape = CircleShape,
+                onClick = {
+                    val datePicker = DatePickerDialog(
+                        context,
+                        { _, year, month, dayOfMonth ->
+                            val timePicker = TimePickerDialog(
+                                context,
+                                { _, hour, minute ->
+                                    calendarStart.set(year, month, dayOfMonth, hour, minute, 0)
+                                    //converter
+                                    val startUnixTimeMillis = calendarStart.timeInMillis
+                                    addVm.startDate.value =
+                                        dateTimeFormat(startUnixTimeMillis)
+                                    Log.d("TIME-S", startUnixTimeMillis.toString())
+                                    onDateTimePicked(startUnixTimeMillis)
 
-            shape = CircleShape,
-            modifier = Modifier.size(90.dp),
-            onClick = {
-                //date dialog
-                val datePicker = DatePickerDialog(
-                    context,
-                    { _, year, month, dayOfMonth ->
-                        //time dialog
-                        val timePicker = TimePickerDialog(
-                            context,
-                            { _, hour, minute ->
-                                calendarEnd.set(year, month, dayOfMonth, hour, minute, 0)
-                                //converter to unix time
-                                val unixTimeMillis = calendarEnd.timeInMillis
-                                Log.d("TIME-E",unixTimeMillis.toString())
+                                    addVm.selectedStartDate.value = startUnixTimeMillis.toInt()
+                                },
+                                calendarStart.get(Calendar.HOUR_OF_DAY),
+                                calendarStart.get(Calendar.MINUTE),
+                                true
+                            )
+                            timePicker.show()
+                        },
+                        calendarStart.get(Calendar.YEAR),
+                        calendarStart.get(Calendar.MONTH),
+                        calendarStart.get(Calendar.DAY_OF_MONTH)
+                    )
+                    datePicker.show()
+                }) {
+                Text(" start date", textAlign = TextAlign.Center)
+            }
 
-                                onDateTimePicked(unixTimeMillis)
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier
+                    .weight(0.5f)
+                    .padding(6.dp)
+            )
 
-                                addVm.selectedEndDateText.value = unixTimeMillis.toInt()
-                            },
-                            calendarEnd.get(Calendar.HOUR_OF_DAY),
-                            calendarEnd.get(Calendar.MINUTE),
-                            true
-                        )
-                        timePicker.show()
-                    },
-                    calendarEnd.get(Calendar.YEAR),
-                    calendarEnd.get(Calendar.MONTH),
-                    calendarEnd.get(Calendar.DAY_OF_MONTH)
-                )
-                datePicker.show()
-            }) {
-            Text(" end date", textAlign = TextAlign.Center)
+            OutlinedButton(
+
+                shape = CircleShape,
+                modifier = Modifier.size(90.dp),
+                onClick = {
+                    //date dialog
+                    val datePicker = DatePickerDialog(
+                        context,
+                        { _, year, month, dayOfMonth ->
+                            //time dialog
+                            val timePicker = TimePickerDialog(
+                                context,
+                                { _, hour, minute ->
+                                    calendarEnd.set(year, month, dayOfMonth, hour, minute, 0)
+                                    //converter to unix time
+                                    val endUnixTimeMillis = calendarEnd.timeInMillis
+                                    //format
+                                    addVm.endDate.value =
+                                        dateTimeFormat(endUnixTimeMillis)
+                                    Log.d("TIME-E", endUnixTimeMillis.toString())
+
+                                    onDateTimePicked(endUnixTimeMillis)
+
+                                    addVm.selectedEndDateText.value = endUnixTimeMillis.toInt()
+                                },
+                                calendarEnd.get(Calendar.HOUR_OF_DAY),
+                                calendarEnd.get(Calendar.MINUTE),
+                                true
+                            )
+                            timePicker.show()
+                        },
+                        calendarEnd.get(Calendar.YEAR),
+                        calendarEnd.get(Calendar.MONTH),
+                        calendarEnd.get(Calendar.DAY_OF_MONTH)
+                    )
+                    datePicker.show()
+                }) {
+                Text(" end date", textAlign = TextAlign.Center)
+            }
         }
+
+        Text(addVm.startDate.value, style = MaterialTheme.typography.labelLarge)
+        Text(addVm.endDate.value, style = MaterialTheme.typography.labelMedium)
+
+
     }
+
 }
