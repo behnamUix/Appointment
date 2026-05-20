@@ -97,7 +97,7 @@ fun RemovedListSc(
             Tab(
                 selected = pagerState.currentPage == 0,
                 onClick = {
-                    scope.launch { pagerState.animateScrollToPage(1,animationSpec = tween(500)) }
+                    scope.launch { pagerState.animateScrollToPage(1, animationSpec = tween(500)) }
                 },
                 text = { Text("people") }
             )
@@ -184,8 +184,8 @@ fun PeopleTabContent(
             LazyColumn {
                 items(listP.value?.data?.data ?: emptyList()) {
                     PeopleRemovedCard(it) {
-                        removedVm.restoreAppointment(it.id)
-                        setMessage("appointment restored!", removedVm.msg)
+                        removedVm.restorePeople(it.id)
+                        setMessage("people restored!", removedVm.msg)
                     }
                 }
             }

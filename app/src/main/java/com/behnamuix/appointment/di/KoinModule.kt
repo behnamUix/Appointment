@@ -7,6 +7,7 @@ import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentRestoreRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.PeopleAddRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.PeopleDeleteRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.PeopleListRepo
+import com.behnamuix.appointment.data.remote.remoteRepo.PeopleRestoreRepo
 import com.behnamuix.appointment.viewModel.HomeViewModel
 import com.behnamuix.appointment.viewModel.SplashViewModel
 import com.behnamuix.appointment.viewModel.appointment.AddAppointmentViewModel
@@ -58,6 +59,7 @@ val repositoryModule = module {
     single { PeopleListRepo(get()) }
     single { PeopleAddRepo(get()) }
     single { PeopleDeleteRepo(get()) }
+    single { PeopleRestoreRepo(get()) }
 }
 
 val viewModelModule = module {
@@ -67,6 +69,11 @@ val viewModelModule = module {
     viewModel { AddAppointmentViewModel(get()) }
     viewModel { PeopleListViewModel(get(), get()) }
     viewModel { AddPeopleViewModel(get()) }
-    viewModel { RemovedListViewModel(get(), get(),get()) }
+    viewModel { RemovedListViewModel(
+        get(),
+        get(),
+        get(),
+        get()
+    ) }
 
 }

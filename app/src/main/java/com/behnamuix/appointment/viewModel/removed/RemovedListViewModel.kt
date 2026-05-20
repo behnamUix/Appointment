@@ -1,7 +1,5 @@
 package com.behnamuix.appointment.viewModel.removed
 
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.behnamuix.appointment.data.remote.remoteModel.appointment.ApiResponse
@@ -9,6 +7,7 @@ import com.behnamuix.appointment.data.remote.remoteModel.people.ApiResponsePeopl
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentListRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentRestoreRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.PeopleListRepo
+import com.behnamuix.appointment.data.remote.remoteRepo.PeopleRestoreRepo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,8 +17,9 @@ import kotlinx.coroutines.launch
 
 class RemovedListViewModel(
     private val appointmentListRepo: AppointmentListRepo,
-    private val peopleListRepo: PeopleListRepo,
     private val appointmentRestoreRepo: AppointmentRestoreRepo,
+    private val peopleListRepo: PeopleListRepo,
+    private val peopleRestoreRepo: PeopleRestoreRepo,
 ) : ViewModel() {
     val _removedList = MutableStateFlow<ApiResponse?>(null)
     var removedList: StateFlow<ApiResponse?> = _removedList.asStateFlow()
@@ -30,7 +30,7 @@ class RemovedListViewModel(
     private val _showToast = MutableSharedFlow<Boolean>()
     var showToast: SharedFlow<Boolean> = _showToast
 
-    val tabs = listOf( "appointment","people")
+    val tabs = listOf("appointment", "people")
 
 
     var msg = MutableStateFlow("")
@@ -54,6 +54,23 @@ class RemovedListViewModel(
             if (success?.success ?: false) {
                 _showToast.emit(true)
                 _removedList.value = _removedList.value?.let { resp ->
+                    resp.copy(
+                        data = resp.data?.copy(
+                            data = resp.data.data.filter { it.id != id }
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun restorePeople(id: Int) {
+        viewModelScope.launch {
+            val success = peopleRestoreRepo.restorePeople(id)
+            //Kotlin object jadid misaze, va to State on jadid ro jaygozin mikoni.
+            if (success?.success ?: false) {
+                _showToast.emit(true)
+                _peopleRemovedList.value = _peopleRemovedList.value?.let { resp ->
                     resp.copy(
                         data = resp.data?.copy(
                             data = resp.data.data.filter { it.id != id }
