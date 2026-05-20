@@ -1,6 +1,5 @@
 package com.behnamuix.appointment.ui.navigation.screens.appointment
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,10 +53,10 @@ fun AppointmentListSc(
 ) {
     val context = LocalContext.current
     val list = vm.appointmentList.collectAsState()
-
-    LaunchedEffect(list, Unit) {
+    LaunchedEffect(Unit) {
         vm.appointmentLoad()
         vm.checkInternet(ctx = context)
+
     }
 
 
@@ -79,8 +78,8 @@ fun AppointmentListSc(
         Spacer(modifier = Modifier.height(16.dp))
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (list.value?.success ?: false) {
-                LazyColumn {
-                    items(list.value!!.data.data) {
+                LazyColumn() {
+                    items(list.value?.data?.data?:emptyList()) {
                         AppointmentCard(it) {
                             vm.itemId.intValue = it.id
                             vm.openAlertDialog.value = true

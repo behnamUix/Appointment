@@ -13,7 +13,7 @@ import io.ktor.http.contentType
 
 class PeopleListRepo(private val client: HttpClient) {
     suspend fun getPeopleList(): ApiResponsePeople? {
-        val peopleListReq = ApiRequest(start = 0, lenght = 100, removedState = 0)
+        val peopleListReq = ApiRequest(start = 0, removedState = 0)
         return try {
             client.post(PEOPLE_LIST_URL) {
                 setBody(peopleListReq)

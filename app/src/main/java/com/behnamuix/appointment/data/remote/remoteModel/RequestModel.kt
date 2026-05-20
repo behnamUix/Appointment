@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ApiRequest(
     var start: Int = 0,
-    var lenght: Int = 100,
+    var lenght: Int = 1000,
     var removedState: Int = 0,
 )
 

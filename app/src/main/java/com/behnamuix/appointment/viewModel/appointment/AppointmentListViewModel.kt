@@ -1,10 +1,12 @@
 package com.behnamuix.appointment.viewModel.appointment
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.behnamuix.appointment.data.remote.remoteModel.ApiRequest
 import com.behnamuix.appointment.data.remote.remoteModel.appointment.ApiResponse
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentDeleteRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentListRepo
@@ -28,9 +30,12 @@ class AppointmentListViewModel(
 
     val openAlertDialog = mutableStateOf(false)
 
+
     fun appointmentLoad() {
         viewModelScope.launch {
             _appointmentList.value = appointmentListRepo.getAppointmentList()
+            Log.e("SIZE", appointmentList.value?.data?.data?.size.toString())
+
         }
     }
 
@@ -40,7 +45,7 @@ class AppointmentListViewModel(
             if (success.success) {
                 _appointmentList.value = _appointmentList.value?.let { response ->
                     response.copy(
-                        data = response.data.copy(
+                        data = response.data?.copy(
                             data = response.data.data.filter { it.id != id }
                         )
                     )
@@ -48,7 +53,9 @@ class AppointmentListViewModel(
             }
         }
     }
+
     fun checkInternet(ctx: Context) {
         connectStatus.value = isInternetAvailable(ctx)
     }
 }
+

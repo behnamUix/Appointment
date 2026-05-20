@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,21 +33,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
-import com.behnamuix.appointment.data.local.model.FakeAppointment
-
+import com.behnamuix.appointment.data.remote.remoteModel.appointment.Item
+import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import com.behnamuix.appointment.viewModel.removed.RemovedListViewModel
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RemovedListSc(
     navController: NavHostController,
-    removedVm: RemovedListViewModel = koinViewModel()
+    removedVm: RemovedListViewModel = koinViewModel(),
+    listVm: AppointmentListViewModel = koinViewModel(),
 ) {
     var list = removedVm.removedList.collectAsState()
     LaunchedEffect(Unit) {
-        delay(2000)
-        removedVm.loadFakeList()
+        removedVm.loadRemovedList()
     }
     Column(
         Modifier
@@ -56,7 +56,7 @@ fun RemovedListSc(
 
         ) {
         Spacer(modifier = Modifier.height(16.dp))
-        ToolbarComp (
+        ToolbarComp(
             "Removed list", onBackClick = {
                 navController.popBackStack()
             },
@@ -67,20 +67,45 @@ fun RemovedListSc(
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            if (list.value.isEmpty()) {
-                Text(
-                    "Loading , please wait...",
-                    color = MaterialTheme.colorScheme.onPrimary.copy(0.4f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
+            if (list.value?.success ?: false) {
                 LazyColumn {
-                    items(list.value) {
+                    items(list.value?.data?.data ?: emptyList()) {
                         RemovedCard(it)
+                    }
 
+                }
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(0.5f)
+                        )
+                        Text(
+                            "Loading , please wait...",
+                            color = MaterialTheme.colorScheme.onPrimary.copy(0.4f),
+                            textAlign = TextAlign.Center,
+
+                            )
+                    }
+
+                    if (!listVm.connectStatus.value) {
+                        Text(
+                            "offline!",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.secondary.copy(0.6f),
+                            textAlign = TextAlign.Center,
+
+                            )
                     }
                 }
+
             }
 
 
@@ -128,8 +153,10 @@ fun ToolbarComp(title: String, onAddClick: () -> Unit, onBackClick: () -> Unit) 
 }
 
 @Composable
-fun RemovedCard(appointment: FakeAppointment) {
-    OutlinedCard(modifier = Modifier.padding(8.dp).alpha(0.5f)) {
+fun RemovedCard(item: Item) {
+    OutlinedCard(modifier = Modifier
+        .padding(8.dp)
+        .alpha(0.5f)) {
         Column(
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -150,11 +177,11 @@ fun RemovedCard(appointment: FakeAppointment) {
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        appointment.title,
+                        item.title,
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        appointment.phoneNumber,
+                        item.phoneNumber,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
                     )
@@ -176,11 +203,11 @@ fun RemovedCard(appointment: FakeAppointment) {
                 color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
             )
             Text(
-                appointment.title,
+                item.title,
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                appointment.description,
+                item.description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
             )
@@ -195,7 +222,7 @@ fun RemovedCard(appointment: FakeAppointment) {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = appointment.startTime,
+                        text = item.startTime,
                         textAlign = TextAlign.Center,
 
                         style = MaterialTheme.typography.bodyMedium,
@@ -205,7 +232,7 @@ fun RemovedCard(appointment: FakeAppointment) {
                     Text(
                         modifier = Modifier.weight(1f),
 
-                        text = appointment.endTime,
+                        text = item.endTime,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.secondary.copy(0.5f)

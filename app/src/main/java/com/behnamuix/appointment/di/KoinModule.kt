@@ -65,6 +65,7 @@ val repositoryModule = module {
     single { AppointmentAddRepo(get()) }
     single { PeopleListRepo(get()) }
     single { PeopleDeleteRepo(get()) }
+    single { PeopleDeleteRepo(get()) }
 }
 
 val viewModelModule = module {
@@ -74,6 +75,6 @@ val viewModelModule = module {
     viewModel { AddAppointmentViewModel(get()) }
     viewModel { PeopleListViewModel(get(),get()) }
     viewModel { AddPeopleViewModel() }
-    viewModel { RemovedListViewModel() }
+    viewModel { RemovedListViewModel(get()) }
 
 }

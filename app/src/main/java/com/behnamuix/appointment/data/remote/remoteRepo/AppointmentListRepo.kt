@@ -12,7 +12,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class AppointmentListRepo(private val client: HttpClient) {
-    val apiRequest = ApiRequest(start = 0, lenght = 100, removedState = 0)
+    val apiRequest = ApiRequest(start = 0, removedState = 0)
+    val removedApiRequest = ApiRequest(start = 0, removedState = 1)
+
     suspend fun getAppointmentList(): ApiResponse? {
         return try {
             client.post(APPOINTMENT_LIST_URL) {
@@ -22,7 +24,19 @@ class AppointmentListRepo(private val client: HttpClient) {
         } catch (e: Exception) {
             e.printStackTrace()
             Log.d("TAg", e.toString())
+            null
+        }
+    }
 
+    suspend fun getRemovedAppointmentList(): ApiResponse? {
+        return try {
+            client.post(APPOINTMENT_LIST_URL) {
+                setBody(removedApiRequest)
+                contentType(ContentType.Application.Json)
+            }.body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.d("TAG", e.message.toString())
             null
         }
     }
