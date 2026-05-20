@@ -21,22 +21,20 @@ class RemovedListViewModel(
     private val peopleListRepo: PeopleListRepo,
     private val peopleRestoreRepo: PeopleRestoreRepo,
 ) : ViewModel() {
-    val _removedList = MutableStateFlow<ApiResponse?>(null)
-    var removedList: StateFlow<ApiResponse?> = _removedList.asStateFlow()
+    val _appointmentRemovedList = MutableStateFlow<ApiResponse?>(null)
+    var appointmentRemovedList: StateFlow<ApiResponse?> = _appointmentRemovedList.asStateFlow()
 
     val _peopleRemovedList = MutableStateFlow<ApiResponsePeople?>(null)
     var peopleRemovedList: StateFlow<ApiResponsePeople?> = _peopleRemovedList.asStateFlow()
 
     private val _showToast = MutableSharedFlow<Boolean>()
     var showToast: SharedFlow<Boolean> = _showToast
-
     val tabs = listOf("appointment", "people")
-
 
     var msg = MutableStateFlow("")
     fun loadRemovedList() {
         viewModelScope.launch {
-            _removedList.value = appointmentListRepo.getRemovedAppointmentList()
+            _appointmentRemovedList.value = appointmentListRepo.getRemovedAppointmentList()
         }
     }
 
@@ -46,14 +44,13 @@ class RemovedListViewModel(
         }
     }
 
-
     fun restoreAppointment(id: Int) {
         viewModelScope.launch {
             val success = appointmentRestoreRepo.restoreAppointment(id)
             //Kotlin object jadid misaze, va to State on jadid ro jaygozin mikoni.
             if (success?.success ?: false) {
                 _showToast.emit(true)
-                _removedList.value = _removedList.value?.let { resp ->
+                _appointmentRemovedList.value = _appointmentRemovedList.value?.let { resp ->
                     resp.copy(
                         data = resp.data?.copy(
                             data = resp.data.data.filter { it.id != id }

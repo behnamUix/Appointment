@@ -32,11 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -64,7 +60,7 @@ fun RemovedListSc(
     listVm: AppointmentListViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
-    val appointmentList = removedVm.removedList.collectAsState()
+    val appointmentList = removedVm.appointmentRemovedList.collectAsState()
     val peopleList = removedVm.peopleRemovedList.collectAsState()
     val pagerState = rememberPagerState(pageCount = { removedVm.tabs.size })
     val scope = rememberCoroutineScope()

@@ -80,7 +80,7 @@ fun AppointmentAddSc(
             )
         Spacer(modifier = Modifier.height(24.dp))
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -99,9 +99,6 @@ fun AppointmentAddSc(
                     painter = painterResource(R.drawable.icon_add),
                     contentDescription = ""
                 )
-
-
-
                 Text(
                     "select person",
                     modifier = Modifier.fillMaxWidth(),
@@ -211,12 +208,13 @@ fun PickDateTimeComp(
                             { _, hour, minute ->
                                 calendarStart.set(year, month, dayOfMonth, hour, minute, 0)
                                 //converter
-                                val unixTimeMillis = calendarStart.timeInMillis / 1000
+                                val unixTimeMillis = calendarStart.timeInMillis
+                                Log.d("TIME-S",unixTimeMillis.toString())
                                 onDateTimePicked(unixTimeMillis)
 
                                 addVm.selectedStartDate.value = unixTimeMillis.toInt()
                             },
-                            calendarStart.get(Calendar.HOUR),
+                            calendarStart.get(Calendar.HOUR_OF_DAY),
                             calendarStart.get(Calendar.MINUTE),
                             true
                         )
@@ -254,12 +252,14 @@ fun PickDateTimeComp(
                             { _, hour, minute ->
                                 calendarEnd.set(year, month, dayOfMonth, hour, minute, 0)
                                 //converter to unix time
-                                val unixTimeMillis = calendarEnd.timeInMillis / 1000
+                                val unixTimeMillis = calendarEnd.timeInMillis
+                                Log.d("TIME-E",unixTimeMillis.toString())
+
                                 onDateTimePicked(unixTimeMillis)
 
                                 addVm.selectedEndDateText.value = unixTimeMillis.toInt()
                             },
-                            calendarEnd.get(Calendar.HOUR),
+                            calendarEnd.get(Calendar.HOUR_OF_DAY),
                             calendarEnd.get(Calendar.MINUTE),
                             true
                         )

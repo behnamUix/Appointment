@@ -71,7 +71,7 @@ fun PeopleAddSc(
             )
         Spacer(modifier = Modifier.height(24.dp))
 
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(modifier = Modifier.padding(8.dp),verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Image(
                 modifier = Modifier
                     .size(100.dp)
@@ -154,7 +154,7 @@ fun MyPhoneTextField(
         label = { Text(label) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        value = addVm.value, onValueChange = { if(addVm.value.length<=11){addVm.value = it} })
+        value = addVm.value, onValueChange = { addVm.value= it })
 
 
 }
@@ -179,5 +179,5 @@ fun SocialNumberTextField(
         label = { Text(label) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        value = addVm.value, onValueChange = { if(addVm.value.length<=10){addVm.value = it} })
+        value = addVm.value, onValueChange = { addVm.value= it})
 }

@@ -106,18 +106,35 @@ fun HomeSc(navController: NavHostController, homeViewModel: HomeViewModel = koin
 
 @Composable
 fun ConnectStatusComp(homeViewModel: HomeViewModel) {
-    Text(
-        if (homeViewModel.connectStatus.value) {
-            "online"
-        } else {
-            ""
-        },
-        textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.labelLarge,
-        color = Color(0xFF4CAF50).copy(0.5f)
+    if (homeViewModel.connectStatus.value) {
+        Text(
+            if (homeViewModel.connectStatus.value) {
+                "online"
+            } else {
+                ""
+            },
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.labelLarge,
+            color = Color(0xFF4CAF50).copy(0.5f)
 
-    )
+        )
+
+    }else{
+        Text(
+            if (homeViewModel.connectStatus.value) {
+                "offline!"
+            } else {
+                ""
+            },
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.labelLarge,
+            color = Color(0xFFF44336).copy(0.5f)
+
+        )
+
+    }
 }
 
 @Composable
