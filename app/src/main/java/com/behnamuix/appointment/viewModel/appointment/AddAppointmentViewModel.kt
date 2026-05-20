@@ -1,7 +1,6 @@
 package com.behnamuix.appointment.viewModel.appointment
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,7 +11,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 class AddAppointmentViewModel(private val addRepo: AppointmentAddRepo) : ViewModel() {
-    var id = mutableIntStateOf(1014)
+
+    var id = mutableStateOf(0)
 
     var title = mutableStateOf("")
     var desc = mutableStateOf("")
@@ -22,30 +22,30 @@ class AddAppointmentViewModel(private val addRepo: AppointmentAddRepo) : ViewMod
     var _showToast = MutableSharedFlow<Boolean>()
     var showToast: SharedFlow<Boolean> = _showToast
 
-    var toastMsg=mutableStateOf("")
+    var toastMsg = mutableStateOf("")
 
-    fun save(
-        personid: Int,
-        startTime: Int,
-        endTime: Int,
-        title: String,
-        des: String
-    ) {
+    fun addAppointment(personId: String?) {
         viewModelScope.launch {
             try {
-                var resp=addRepo.addAppointment(personid, startTime, endTime, title, des)
-                if(resp?.success!!){
-                    Log.d("RESP","OK")
+                var resp = addRepo.addAppointment(
+                    personId?.toInt()?:0,
+                    selectedStartDate.value,
+                    selectedEndDateText.value,
+                    title.value,
+                    desc.value
+                )
+                if (resp?.success!!) {
+                    Log.d("RESP", "OK")
                     _showToast.emit(true)
                     setToastMsg("OK")
-                }else{
+                } else {
                     _showToast.emit(true)
                     setToastMsg("Error in fetch data!")
 
 
                 }
-            }catch (e: Exception){
-                Log.d("RESP","ERR")
+            } catch (e: Exception) {
+                Log.d("RESP", "ERR")
                 _showToast.emit(true)
                 setToastMsg("Error in fetch data!")
 
@@ -66,7 +66,7 @@ class AddAppointmentViewModel(private val addRepo: AppointmentAddRepo) : ViewMod
                 setToastMsg("Error: filed is empty!")
 
             }
-            if (id.intValue == 0) {
+            if (id.value == 0) {
                 _showToast.emit(true)
                 setToastMsg("Error: person not set!")
 
@@ -74,8 +74,9 @@ class AddAppointmentViewModel(private val addRepo: AppointmentAddRepo) : ViewMod
         }
 
     }
-    fun setToastMsg(text:String){
-        toastMsg.value=text
+
+    fun setToastMsg(text: String) {
+        toastMsg.value = text
     }
 
 }

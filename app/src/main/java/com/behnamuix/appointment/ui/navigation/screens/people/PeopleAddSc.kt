@@ -1,5 +1,6 @@
 package com.behnamuix.appointment.ui.theme.navigation.screens.people
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,16 +21,20 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
+import com.behnamuix.appointment.ui.theme.navigation.Screen
+import com.behnamuix.appointment.utils.setMessage
 import com.behnamuix.appointment.viewModel.people.AddPeopleViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -40,6 +45,14 @@ fun PeopleAddSc(
 
 ) {
     val showError = addPeopleVm.error
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        addPeopleVm.showToast.collect {
+            if (it) {
+                Toast.makeText(context, addPeopleVm.msg.value, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     Column(
         Modifier
             .fillMaxSize()
@@ -75,10 +88,11 @@ fun PeopleAddSc(
             Button(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-//                    if (!addPeopleVm.firestName.value.isEmpty()) {
-//                        navController.navigate(Routes.PEOPLE_LIST)
-//                    }
                     addPeopleVm.checkValue()
+                    addPeopleVm.addPeople()
+                    setMessage("people added", addPeopleVm.msg)
+                    navController.popBackStack()
+
 
                 }, modifier = Modifier.fillMaxWidth()
             ) {

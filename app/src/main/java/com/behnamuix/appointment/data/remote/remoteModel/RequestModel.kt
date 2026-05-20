@@ -23,3 +23,12 @@ data class AddAppointmentRequest(
     val title: String? = "",
     val description: String? = ""
 )
+
+@Serializable
+data class AddPeopleRequest(
+    val firstName:String,
+    val lastName:String,
+    val socialNumber:String,
+    val phoneNumber:String
+)
+

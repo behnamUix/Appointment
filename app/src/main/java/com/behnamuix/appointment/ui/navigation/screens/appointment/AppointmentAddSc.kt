@@ -39,7 +39,6 @@ import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
 import com.behnamuix.appointment.ui.theme.navigation.Screen
 import com.behnamuix.appointment.viewModel.appointment.AddAppointmentViewModel
-import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
@@ -49,7 +48,6 @@ fun AppointmentAddSc(
     addVm: AddAppointmentViewModel = koinViewModel()
 ) {
     val personId = navController.currentBackStackEntry?.arguments?.getString("personId")
-
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -121,13 +119,10 @@ fun AppointmentAddSc(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
 
-                    addVm.save(
-                        personId?.toInt() ?: 0,
-                        addVm.selectedStartDate.value,
-                        endTime = addVm.selectedEndDateText.value,
-                        addVm.title.value,
-                        addVm.desc.value
+                    addVm.addAppointment(
+                        personId
                     )
+
                     //harchi navigation ghabl az list bood remove mishe
                     navController.navigate(Screen.AppointmentList.route) {
                         popUpTo(Screen.AppointmentList.route) {
