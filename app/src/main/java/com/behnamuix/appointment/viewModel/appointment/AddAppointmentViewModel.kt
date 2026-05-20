@@ -1,6 +1,7 @@
 package com.behnamuix.appointment.viewModel.appointment
 
 import android.util.Log
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -17,23 +18,23 @@ class AddAppointmentViewModel(private val addRepo: AppointmentAddRepo) : ViewMod
     var title = mutableStateOf("")
     var desc = mutableStateOf("")
     var selectedStartDate = mutableStateOf(0)
-    var selectedEndDateText = mutableStateOf(0)
+    var selectedEndDate = mutableStateOf(0)
 
     var _showToast = MutableSharedFlow<Boolean>()
     var showToast: SharedFlow<Boolean> = _showToast
 
     var toastMsg = mutableStateOf("")
 
-    var startDate=mutableStateOf("")
-    var endDate=mutableStateOf("")
+    var startDate = mutableStateOf("")
+    var endDate = mutableStateOf("")
 
     fun addAppointment(personId: String?) {
         viewModelScope.launch {
             try {
                 var resp = addRepo.addAppointment(
-                    personId?.toInt()?:0,
+                    personId?.toInt() ?: 0,
                     selectedStartDate.value,
-                    selectedEndDateText.value,
+                    selectedEndDate.value,
                     title.value,
                     desc.value
                 )
@@ -41,6 +42,7 @@ class AddAppointmentViewModel(private val addRepo: AppointmentAddRepo) : ViewMod
                     Log.d("RESP", "OK")
                     _showToast.emit(true)
                     setToastMsg("OK")
+
                 } else {
                     _showToast.emit(true)
                     setToastMsg("Error in fetch data!")
@@ -50,7 +52,7 @@ class AddAppointmentViewModel(private val addRepo: AppointmentAddRepo) : ViewMod
             } catch (e: Exception) {
                 Log.d("RESP", "ERR")
                 _showToast.emit(true)
-                setToastMsg("Error in fetch data!")
+                setToastMsg("ERR:${e.message}")
 
             }
 

@@ -35,7 +35,7 @@ data class Item(
 @Serializable
 data class DefaultResponse(
     val success: Boolean,
-    val message: String? = "",
+    val message: String?,
     val data: Int?
 )
 

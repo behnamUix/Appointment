@@ -29,6 +29,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.snapshots.toInt
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -222,13 +223,13 @@ fun PickDateTimeComp(
                                 { _, hour, minute ->
                                     calendarStart.set(year, month, dayOfMonth, hour, minute, 0)
                                     //converter
-                                    val startUnixTimeMillis = calendarStart.timeInMillis
-                                    addVm.startDate.value =
-                                        dateTimeFormat(startUnixTimeMillis)
+                                    val startUnixTimeMillis = calendarStart.timeInMillis.toLong()
+                                    addVm.startDate.value = dateTimeFormat(startUnixTimeMillis)
                                     Log.d("TIME-S", startUnixTimeMillis.toString())
                                     onDateTimePicked(startUnixTimeMillis)
 
-                                    addVm.selectedStartDate.value = startUnixTimeMillis.toInt()
+                                    addVm.selectedStartDate.value =
+                                        (startUnixTimeMillis / 1000L).toInt()
                                 },
                                 calendarStart.get(Calendar.HOUR_OF_DAY),
                                 calendarStart.get(Calendar.MINUTE),
@@ -270,13 +271,13 @@ fun PickDateTimeComp(
                                     //converter to unix time
                                     val endUnixTimeMillis = calendarEnd.timeInMillis
                                     //format
-                                    addVm.endDate.value =
-                                        dateTimeFormat(endUnixTimeMillis)
+                                    addVm.endDate.value = dateTimeFormat(endUnixTimeMillis)
                                     Log.d("TIME-E", endUnixTimeMillis.toString())
 
                                     onDateTimePicked(endUnixTimeMillis)
 
-                                    addVm.selectedEndDateText.value = endUnixTimeMillis.toInt()
+                                    addVm.selectedEndDate.value =
+                                        (endUnixTimeMillis / 1000L).toInt()
                                 },
                                 calendarEnd.get(Calendar.HOUR_OF_DAY),
                                 calendarEnd.get(Calendar.MINUTE),
@@ -294,8 +295,13 @@ fun PickDateTimeComp(
             }
         }
 
-        Text(addVm.startDate.value, style = MaterialTheme.typography.labelLarge)
-        Text(addVm.endDate.value, style = MaterialTheme.typography.labelMedium)
+        Text(
+            addVm.startDate.value.toString(),
+            style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary
+        )
+        Text(addVm.endDate.value,
+            style = MaterialTheme.typography.labelMedium,
+             color = MaterialTheme.colorScheme.secondary)
 
 
     }

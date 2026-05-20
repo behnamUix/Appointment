@@ -18,10 +18,10 @@ data class DeleteRequest(
 @Serializable
 data class AddAppointmentRequest(
     val personId: Int = 0,
-    val startTime: Int = 0,
-    val endTime: Int = 0,
-    val title: String? = "",
-    val description: String? = ""
+    val startTime: Int?,
+    val endTime: Int?,
+    val title: String?,
+    val description: String?
 )
 
 @Serializable
