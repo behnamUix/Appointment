@@ -1,5 +1,6 @@
 package com.behnamuix.appointment.ui.theme.navigation.screens.removed
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.remote.remoteModel.appointment.Item
+import com.behnamuix.appointment.utils.setMessage
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import com.behnamuix.appointment.viewModel.removed.RemovedListViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -44,9 +47,15 @@ fun RemovedListSc(
     removedVm: RemovedListViewModel = koinViewModel(),
     listVm: AppointmentListViewModel = koinViewModel(),
 ) {
-    var list = removedVm.removedList.collectAsState()
+    val context = LocalContext.current
+    val list = removedVm.removedList.collectAsState()
     LaunchedEffect(Unit) {
         removedVm.loadRemovedList()
+        removedVm.showToast.collect {
+            if (it) {
+                Toast.makeText(context, removedVm.msg.value, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
     Column(
         Modifier
@@ -70,7 +79,10 @@ fun RemovedListSc(
             if (list.value?.success ?: false) {
                 LazyColumn {
                     items(list.value?.data?.data ?: emptyList()) {
-                        RemovedCard(it)
+                        RemovedCard(it) {
+                            removedVm.restoreAppointment(it.id)
+                            setMessage("appointment restored!", removedVm.msg)
+                        }
                     }
 
                 }
@@ -95,7 +107,7 @@ fun RemovedListSc(
                             )
                     }
 
-                    if (!listVm.connectStatus.value) {
+                    if (listVm.connectStatus.value) {
                         Text(
                             "offline!",
                             style = MaterialTheme.typography.labelMedium,
@@ -153,10 +165,12 @@ fun ToolbarComp(title: String, onAddClick: () -> Unit, onBackClick: () -> Unit) 
 }
 
 @Composable
-fun RemovedCard(item: Item) {
-    OutlinedCard(modifier = Modifier
-        .padding(8.dp)
-        .alpha(0.5f)) {
+fun RemovedCard(item: Item, onItemClick: () -> Unit) {
+    OutlinedCard(
+        modifier = Modifier
+            .padding(8.dp)
+            .alpha(0.5f)
+    ) {
         Column(
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -187,7 +201,9 @@ fun RemovedCard(item: Item) {
                     )
                 }
                 Spacer(Modifier.weight(1f))
-                IconButton({}) {
+                IconButton({
+                    onItemClick()
+                }) {
                     Icon(
                         tint = Color(0xFFF44336),
                         modifier = Modifier

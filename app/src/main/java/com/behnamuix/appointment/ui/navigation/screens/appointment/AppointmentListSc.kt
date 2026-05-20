@@ -1,5 +1,6 @@
 package com.behnamuix.appointment.ui.navigation.screens.appointment
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.remote.remoteModel.appointment.Item
 import com.behnamuix.appointment.ui.theme.navigation.Screen
+import com.behnamuix.appointment.utils.setMessage
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -56,6 +58,11 @@ fun AppointmentListSc(
     LaunchedEffect(Unit) {
         vm.appointmentLoad()
         vm.checkInternet(ctx = context)
+        vm.showToast.collect {
+            if (it) {
+                Toast.makeText(context, vm.msg.value, Toast.LENGTH_SHORT).show()
+            }
+        }
 
     }
 
@@ -79,7 +86,7 @@ fun AppointmentListSc(
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (list.value?.success ?: false) {
                 LazyColumn() {
-                    items(list.value?.data?.data?:emptyList()) {
+                    items(list.value?.data?.data ?: emptyList()) {
                         AppointmentCard(it) {
                             vm.itemId.intValue = it.id
                             vm.openAlertDialog.value = true
@@ -263,6 +270,7 @@ fun DeleteDialogComp(
                 onClick = {
                     vm.appointmentDelete(id, text)
                     dialog(false)
+                    setMessage("appointment deleted!",vm.msg)
                 }
             ) {
                 Text("Confirm")

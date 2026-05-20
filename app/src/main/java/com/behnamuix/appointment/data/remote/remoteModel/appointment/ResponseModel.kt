@@ -33,10 +33,10 @@ data class Item(
 )
 
 @Serializable
-data class DeleteResponse(
+data class DefaultResponse(
     val success: Boolean,
     val message: String? = "",
-    val data: Int
+    val data: Int?
 )
 
 @Serializable
