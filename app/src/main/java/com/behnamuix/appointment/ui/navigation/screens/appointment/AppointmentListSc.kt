@@ -76,6 +76,7 @@ fun AppointmentListSc(
         ) {
         Spacer(modifier = Modifier.height(16.dp))
         ToolbarComp(
+
             "Appointment list", onBackClick = {
                 navController.popBackStack()
             },

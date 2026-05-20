@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class PeopleListViewModel(val peopleRepo: PeopleListRepo, val peopleDeleteRepo: PeopleDeleteRepo) :
+class PeopleListViewModel(val peopleListRepo: PeopleListRepo, val peopleDeleteRepo: PeopleDeleteRepo) :
     ViewModel() {
     var _peopleList = MutableStateFlow<ApiResponsePeople?>(null)
     var peopleList: StateFlow<ApiResponsePeople?> = _peopleList.asStateFlow()
@@ -23,9 +23,11 @@ class PeopleListViewModel(val peopleRepo: PeopleListRepo, val peopleDeleteRepo: 
 
     fun loadPeopleList() {
         viewModelScope.launch {
-            _peopleList.value = peopleRepo.getPeopleList()
+            _peopleList.value = peopleListRepo.getPeopleList()
         }
     }
+
+
 
     fun peopleDelete(id: Int, reason: String) {
         viewModelScope.launch {

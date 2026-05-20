@@ -12,11 +12,29 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class PeopleListRepo(private val client: HttpClient) {
+    val peopleListReq = ApiRequest(start = 0, lenght = 100, removedState = 0)
+    val removedPeopleRequest = ApiRequest(start = 0, lenght = 100, removedState = 1)
+
     suspend fun getPeopleList(): ApiResponsePeople? {
-        val peopleListReq = ApiRequest(start = 0, lenght = 100, removedState = 0)
+
         return try {
             client.post(PEOPLE_LIST_URL) {
                 setBody(peopleListReq)
+                contentType(ContentType.Application.Json)
+            }.body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.d("TAg", e.toString())
+
+            null
+        }
+    }
+
+    suspend fun getRemovedPeopleList(): ApiResponsePeople? {
+
+        return try {
+            client.post(PEOPLE_LIST_URL) {
+                setBody(removedPeopleRequest)
                 contentType(ContentType.Application.Json)
             }.body()
         } catch (e: Exception) {

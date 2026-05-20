@@ -1,10 +1,14 @@
 package com.behnamuix.appointment.viewModel.removed
 
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.behnamuix.appointment.data.remote.remoteModel.appointment.ApiResponse
+import com.behnamuix.appointment.data.remote.remoteModel.people.ApiResponsePeople
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentListRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentRestoreRepo
+import com.behnamuix.appointment.data.remote.remoteRepo.PeopleListRepo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -14,13 +18,20 @@ import kotlinx.coroutines.launch
 
 class RemovedListViewModel(
     private val appointmentListRepo: AppointmentListRepo,
-    private val appointmentRestoreRepo: AppointmentRestoreRepo
+    private val peopleListRepo: PeopleListRepo,
+    private val appointmentRestoreRepo: AppointmentRestoreRepo,
 ) : ViewModel() {
     val _removedList = MutableStateFlow<ApiResponse?>(null)
     var removedList: StateFlow<ApiResponse?> = _removedList.asStateFlow()
 
+    val _peopleRemovedList = MutableStateFlow<ApiResponsePeople?>(null)
+    var peopleRemovedList: StateFlow<ApiResponsePeople?> = _peopleRemovedList.asStateFlow()
+
     private val _showToast = MutableSharedFlow<Boolean>()
     var showToast: SharedFlow<Boolean> = _showToast
+
+    val tabs = listOf( "appointment","people")
+
 
     var msg = MutableStateFlow("")
     fun loadRemovedList() {
@@ -28,6 +39,13 @@ class RemovedListViewModel(
             _removedList.value = appointmentListRepo.getRemovedAppointmentList()
         }
     }
+
+    fun loadPeopleRemovedList() {
+        viewModelScope.launch {
+            _peopleRemovedList.value = peopleListRepo.getRemovedPeopleList()
+        }
+    }
+
 
     fun restoreAppointment(id: Int) {
         viewModelScope.launch {
