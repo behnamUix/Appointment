@@ -248,7 +248,7 @@ fun PickDateTimeComp(
 
             HorizontalDivider(
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.onPrimary.copy(0.5f),
                 modifier = Modifier
                     .weight(0.5f)
                     .padding(6.dp)

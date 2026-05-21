@@ -71,10 +71,13 @@ fun SplashSc(
         stateIcon = 0.dp
         stateText = 0.dp
         splashVm.showHomeSc(ctx)
-        goHome.collect {
-            if (it) {
-                navController.navigate(Screen.Home.route)
+        splashVm.checkInternet(ctx)
+        if (splashVm.connectStatus.value) {
+            goHome.collect {
+                if (it) {
+                    navController.navigate(Screen.Home.route)
 
+                }
             }
         }
 

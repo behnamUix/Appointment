@@ -166,14 +166,11 @@ fun AppointmentCard(item: Item, deleteItem: () -> Unit) {
                 }
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        item.title,
-                        style = MaterialTheme.typography.titleMedium
-                    )
+
                     Text(
                         item.personName,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+                        style = MaterialTheme.typography.titleMedium,
+
                     )
                     Text(
                         item.phoneNumber,

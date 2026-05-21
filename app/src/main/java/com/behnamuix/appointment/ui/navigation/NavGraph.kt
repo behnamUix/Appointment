@@ -17,7 +17,7 @@ fun AppNavGraph() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Splash.route
 
     ) {
         composable(Screen.Splash.route) {
