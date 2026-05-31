@@ -7,9 +7,9 @@ A modern Android application built with **Ktor**, **MVVM**, **Koin** and **Jetpa
 ## ✨ Screenshots
 
 <p align="center">
-  <img src="splash.jpg" width="30%" />
   <img src="home.jpg" width="30%" />
-  <img src="list.jpg" width="30%" />
+  <img src="list1.jpg" width="30%" />
+  <img src="list2.jpg" width="30%" />
 </p>
 
 ---
