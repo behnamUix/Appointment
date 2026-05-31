@@ -12,7 +12,7 @@
         android:icon="@drawable/icon_api"
         android:label="@string/app_name"
         android:roundIcon="@drawable/icon_api"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/Theme.MyApplication03">
         <activity
             android:name=".MainActivity"

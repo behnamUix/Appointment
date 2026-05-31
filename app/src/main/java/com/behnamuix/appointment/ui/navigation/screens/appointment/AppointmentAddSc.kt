@@ -29,7 +29,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.snapshots.toInt
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,9 +42,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.behnamuix.appointment.R
+import com.behnamuix.appointment.data.remote.remoteModel.appointment.ApiResponseGetAppointment
 import com.behnamuix.appointment.ui.theme.navigation.Screen
 import com.behnamuix.appointment.utils.dateTimeFormat
 import com.behnamuix.appointment.viewModel.appointment.AddAppointmentViewModel
+import com.behnamuix.appointment.viewModel.appointment.AppointmentGetViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 import java.util.TimeZone
@@ -48,10 +54,14 @@ import java.util.TimeZone
 @Composable
 fun AppointmentAddSc(
     navController: NavHostController,
-    addVm: AddAppointmentViewModel = koinViewModel()
+    addVm: AddAppointmentViewModel = koinViewModel(),
+    getVm: AppointmentGetViewModel = koinViewModel(),
 ) {
-    val personId = navController.currentBackStackEntry?.arguments?.getString("personId")
+    var update by remember{mutableStateOf(false)}
+    var personId = navController.currentBackStackEntry?.arguments?.getString("personId")
+    val appointmentId = navController.currentBackStackEntry?.arguments?.getString("appointmentId")
 
+    val appointment by getVm.appointment.collectAsState()
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         addVm.checkValue()
@@ -64,6 +74,7 @@ fun AppointmentAddSc(
 
 
     }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -87,12 +98,21 @@ fun AppointmentAddSc(
             modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            appointmentId?.toInt()?.let {
+                if (it > -1) {
+                    getVm.getAppointment(it)
+                    UpdateAppointment(addVm, appointment) {
+                        personId = it
+                    }
+                }
+            }
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
                     navController.navigate(Screen.PeopleList.route)
                 }) {
+
                 Image(
                     modifier = Modifier.size(80.dp),
                     painter = painterResource(R.drawable.icon_user),
@@ -118,30 +138,58 @@ fun AppointmentAddSc(
             PickDateTimeComp(addVm) {
                 Log.d("TAG", it.toString())
             }
-            Button(
-                shape = RoundedCornerShape(8.dp),
-                onClick = {
+            if (update) {
+                Button(
+                    shape = RoundedCornerShape(8.dp),
+                    onClick = {
 
-                    addVm.addAppointment(
-                        personId
-                    )
+                        addVm.addAppointment(
+                            personId
+                        )
 
-                    //harchi navigation ghabl az list bood remove mishe
-                    navController.navigate(Screen.AppointmentList.route) {
-                        popUpTo(Screen.AppointmentList.route) {
-                            inclusive = true
+                        //harchi navigation ghabl az list bood remove mishe
+                        navController.navigate(Screen.AppointmentList.route) {
+                            popUpTo(Screen.AppointmentList.route) {
+                                inclusive = true
+                            }
                         }
-                    }
 
 
-                }, modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    "save",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(8.dp)
-                )
+                    }, modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "update",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            } else {
+                Button(
+                    shape = RoundedCornerShape(8.dp),
+                    onClick = {
+
+                        addVm.addAppointment(
+                            personId
+                        )
+
+                        //harchi navigation ghabl az list bood remove mishe
+                        navController.navigate(Screen.AppointmentList.route) {
+                            popUpTo(Screen.AppointmentList.route) {
+                                inclusive = true
+                            }
+                        }
+
+
+                    }, modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "save",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             }
+
             TextButton(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
@@ -158,6 +206,22 @@ fun AppointmentAddSc(
 
 
     }
+}
+
+@Composable
+fun UpdateAppointment(
+    addVm: AddAppointmentViewModel,
+    appointment: ApiResponseGetAppointment?,
+    setPersonId: (String) -> Unit
+) {
+
+    addVm.title.value = appointment?.data?.title ?: ""
+    addVm.desc.value = appointment?.data?.description ?: ""
+    addVm.startDate.value = (appointment?.data?.startTime ?: "") as String
+    addVm.endDate.value = (appointment?.data?.endTime ?: "") as String
+    addVm.selectedStartDate.value = (appointment?.data?.startTime ?: "") as Int
+    addVm.selectedEndDate.value = (appointment?.data?.endTime ?: "") as Int
+    setPersonId(appointment?.data?.personId.toString())
 }
 
 @Composable
@@ -299,9 +363,11 @@ fun PickDateTimeComp(
             addVm.startDate.value.toString(),
             style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary
         )
-        Text(addVm.endDate.value,
+        Text(
+            addVm.endDate.value,
             style = MaterialTheme.typography.labelMedium,
-             color = MaterialTheme.colorScheme.secondary)
+            color = MaterialTheme.colorScheme.secondary
+        )
 
 
     }

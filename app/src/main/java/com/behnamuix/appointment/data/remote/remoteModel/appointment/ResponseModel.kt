@@ -11,6 +11,23 @@ data class ApiResponse(
 )
 
 @Serializable
+data class ApiResponseGetAppointment(
+    val success: Boolean,
+    val message: String? = null,
+    val data: Data? = null
+)
+
+@Serializable
+data class Data(
+    val id: Int,
+    val personId: Int,
+    val startTime: Int,
+    val endTime: Int,
+    val title: String,
+    val description: String
+)
+
+@Serializable
 data class DataContainer(
     val data: List<Item>,
     val totalCount: Int,

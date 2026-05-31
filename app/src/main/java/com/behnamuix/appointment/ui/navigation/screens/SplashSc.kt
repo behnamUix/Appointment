@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ import com.behnamuix.appointment.R
 import com.behnamuix.appointment.ui.theme.navigation.Screen
 
 import com.behnamuix.appointment.viewModel.SplashViewModel
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -44,6 +46,7 @@ fun SplashSc(
     val infiniteState = rememberInfiniteTransition()
     var stateIcon by remember { mutableStateOf(-200.dp) }
     var stateText by remember { mutableStateOf(800.dp) }
+    var statusText by remember { mutableStateOf(100.dp) }
 
     val iconTranslateX by animateDpAsState(
         targetValue = stateIcon,
@@ -52,6 +55,10 @@ fun SplashSc(
     val textTranslateX by animateDpAsState(
         targetValue = stateText,
         animationSpec = tween(2000)
+    )
+    val statusTextTranslateY by animateDpAsState(
+        targetValue = statusText,
+        animationSpec = tween(3000)
     )
 
     val alphaIcon by infiniteState.animateFloat(
@@ -70,6 +77,8 @@ fun SplashSc(
     LaunchedEffect(Unit) {
         stateIcon = 0.dp
         stateText = 0.dp
+        delay(2000)
+        statusText = 0.dp
         splashVm.showHomeSc(ctx)
         splashVm.checkInternet(ctx)
         if (splashVm.connectStatus.value) {
@@ -84,7 +93,6 @@ fun SplashSc(
 
     }
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(R.drawable.icon_api),
@@ -99,8 +107,18 @@ fun SplashSc(
                 modifier = Modifier.offset(x = textTranslateX),
                 style = MaterialTheme.typography.headlineSmall
             )
+        }
 
-
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            if (!splashVm.connectStatus.value) {
+                Text(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .offset(y = statusTextTranslateY),
+                    text = "offline!",
+                    color = MaterialTheme.colorScheme.secondary.copy(0.6f)
+                )
+            }
         }
 
     }

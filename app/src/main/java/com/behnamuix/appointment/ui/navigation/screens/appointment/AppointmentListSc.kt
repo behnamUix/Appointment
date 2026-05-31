@@ -45,6 +45,7 @@ import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.remote.remoteModel.appointment.Item
 import com.behnamuix.appointment.ui.theme.navigation.Screen
 import com.behnamuix.appointment.utils.setMessage
+import com.behnamuix.appointment.viewModel.appointment.AppointmentGetViewModel
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -52,6 +53,8 @@ import org.koin.androidx.compose.koinViewModel
 fun AppointmentListSc(
     navController: NavHostController,
     vm: AppointmentListViewModel = koinViewModel(),
+    onItemClick:(Int)->Unit
+
 ) {
     val context = LocalContext.current
     val list = vm.appointmentList.collectAsState()
@@ -88,7 +91,10 @@ fun AppointmentListSc(
             if (list.value?.success ?: false) {
                 LazyColumn() {
                     items(list.value?.data?.data ?: emptyList()) {
-                        AppointmentCard(it) {
+                        AppointmentCard(it, itemClicked = {
+                            onItemClick(it.id)
+
+                        }) {
                             vm.itemId.intValue = it.id
                             vm.openAlertDialog.value = true
                         }
@@ -145,8 +151,8 @@ fun AppointmentListSc(
 }
 
 @Composable
-fun AppointmentCard(item: Item, deleteItem: () -> Unit) {
-    OutlinedCard(modifier = Modifier.padding(8.dp)) {
+fun AppointmentCard(item: Item, itemClicked: () -> Unit, deleteItem: () -> Unit) {
+    OutlinedCard(modifier = Modifier.padding(8.dp), onClick = { itemClicked() }) {
         Column(
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -171,7 +177,7 @@ fun AppointmentCard(item: Item, deleteItem: () -> Unit) {
                         item.personName,
                         style = MaterialTheme.typography.titleMedium,
 
-                    )
+                        )
                     Text(
                         item.phoneNumber,
                         style = MaterialTheme.typography.bodyMedium,
@@ -268,7 +274,7 @@ fun DeleteDialogComp(
                 onClick = {
                     vm.appointmentDelete(id, text)
                     dialog(false)
-                    setMessage("appointment deleted!",vm.msg)
+                    setMessage("appointment deleted!", vm.msg)
                 }
             ) {
                 Text("Confirm")

@@ -1,6 +1,7 @@
 package com.behnamuix.appointment.ui.navigation.screens.people
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,7 @@ import com.behnamuix.appointment.R
 import com.behnamuix.appointment.data.remote.remoteModel.people.PeopleData
 import com.behnamuix.appointment.ui.navigation.screens.appointment.ToolbarComp
 import com.behnamuix.appointment.ui.theme.navigation.Screen
+import com.behnamuix.appointment.utils.setMessage
 import com.behnamuix.appointment.viewModel.people.PeopleListViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -54,10 +57,15 @@ fun PeopleListSc(
     onItemClick: (Int) -> Unit
 ) {
     val list = peopleVm.peopleList.collectAsState()
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
-
         peopleVm.loadPeopleList()
+        peopleVm.showToast.collect {
+            if (it) {
+                Toast.makeText(context, peopleVm.msg.value, Toast.LENGTH_SHORT).show()
 
+            }
+        }
     }
     Column(
         Modifier
@@ -134,8 +142,9 @@ fun PeopleListSc(
 
 @Composable
 fun PeopleCard(people: PeopleData, deleteItem: () -> Unit, onCardClick: () -> Unit) {
-    OutlinedCard(modifier =
-        Modifier.padding(8.dp),
+    OutlinedCard(
+        modifier =
+            Modifier.padding(8.dp),
         onClick = { onCardClick() }) {
         Column(
             modifier = Modifier.padding(12.dp),
@@ -205,6 +214,7 @@ fun PeopleCard(people: PeopleData, deleteItem: () -> Unit, onCardClick: () -> Un
 
     }
 }
+
 @Composable
 fun DeletePeopleDialogComp(
     label: String,
@@ -231,6 +241,8 @@ fun DeletePeopleDialogComp(
             TextButton(
                 onClick = {
                     vm.peopleDelete(id, text)
+                    setMessage("people deleted!", vm.msg)
+
                     dialog(false)
                 }
             ) {

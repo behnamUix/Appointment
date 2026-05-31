@@ -2,6 +2,7 @@ package com.behnamuix.appointment.di
 
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentAddRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentDeleteRepo
+import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentGetRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentListRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.AppointmentRestoreRepo
 import com.behnamuix.appointment.data.remote.remoteRepo.PeopleAddRepo
@@ -11,6 +12,7 @@ import com.behnamuix.appointment.data.remote.remoteRepo.PeopleRestoreRepo
 import com.behnamuix.appointment.viewModel.HomeViewModel
 import com.behnamuix.appointment.viewModel.SplashViewModel
 import com.behnamuix.appointment.viewModel.appointment.AddAppointmentViewModel
+import com.behnamuix.appointment.viewModel.appointment.AppointmentGetViewModel
 import com.behnamuix.appointment.viewModel.appointment.AppointmentListViewModel
 import com.behnamuix.appointment.viewModel.people.AddPeopleViewModel
 import com.behnamuix.appointment.viewModel.people.PeopleListViewModel
@@ -43,11 +45,7 @@ val networkModule = module {
                 header("Accept", "application/json")
             }
 
-            install(HttpTimeout) {
-                requestTimeoutMillis = 60000L
-                connectTimeoutMillis = 30000L
-                socketTimeoutMillis = 60000L
-            }
+
         }
     }
 }
@@ -60,20 +58,24 @@ val repositoryModule = module {
     single { PeopleAddRepo(get()) }
     single { PeopleDeleteRepo(get()) }
     single { PeopleRestoreRepo(get()) }
+    single { AppointmentGetRepo(get()) }
 }
 
 val viewModelModule = module {
+    viewModel { AppointmentGetViewModel(get()) }
     viewModel { SplashViewModel() }
     viewModel { HomeViewModel() }
     viewModel { AppointmentListViewModel(get(), get()) }
     viewModel { AddAppointmentViewModel(get()) }
     viewModel { PeopleListViewModel(get(), get()) }
     viewModel { AddPeopleViewModel(get()) }
-    viewModel { RemovedListViewModel(
-        get(),
-        get(),
-        get(),
-        get()
-    ) }
+    viewModel {
+        RemovedListViewModel(
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
 }
